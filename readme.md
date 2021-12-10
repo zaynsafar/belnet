@@ -47,7 +47,7 @@ If you are not on a platform supported by the debian packages or if you want to 
     $ cd belnet
     $ mkdir build
     $ cd build
-    $ cmake .. -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON
+    $ cmake .. -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DWITH_TESTS=OFF
     $ make -j$(nproc)
 
 install:
@@ -64,7 +64,7 @@ alternatively you can build from source, make sure you have cmake, libuv and xco
     $ cd belnet
     $ mkdir build
     $ cd build
-    $ cmake .. -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON
+    $ cmake .. -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DWITH_TESTS=OFF
     $ make -j$(sysctl -n hw.ncpu)
 
 install:
@@ -125,7 +125,7 @@ build:
     $ cd belnet
     $ mkdir build
     $ cd build
-    $ cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DBUILD_SHARED_DEPS=ON ..
+    $ cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DBUILD_SHARED_DEPS=ON -DWITH_TESTS=OFF ..
     $ make
 
 install (root):
