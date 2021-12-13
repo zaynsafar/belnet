@@ -61,6 +61,6 @@ COPY . .
 RUN set -ex && \
     git submodule update --init --recursive && \
     rm -rf build && mkdir build && cd build && \
-    cmake .. -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON && \
+    cmake .. -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DWITH_TESTS=OFF && \
     make -j$(nproc)
 
