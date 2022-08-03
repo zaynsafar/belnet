@@ -35,18 +35,18 @@ namespace llarp
       }
     };
 
-    struct ISNode
+    struct IMNode
     {
       service::EncryptedIntroSet introset;
 
       Key_t ID;
 
-      ISNode()
+      IMNode()
       {
         ID.Zero();
       }
 
-      ISNode(service::EncryptedIntroSet other) : introset(std::move(other))
+      IMNode(service::EncryptedIntroSet other) : introset(std::move(other))
       {
         ID = Key_t(introset.derivedSigningKey.as_array());
       }
@@ -58,7 +58,7 @@ namespace llarp
       }
 
       bool
-      operator<(const ISNode& other) const
+      operator<(const IMNode& other) const
       {
         return introset.signedAt < other.introset.signedAt;
       }

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+codesign --verbose=4 --force -s "@CODESIGN_APPEX@" \
+  --entitlements "@PROJECT_SOURCE_DIR@/contrib/macos/belnet-extension.entitlements.plist" \
+  --deep --strict --timestamp --options=runtime "@SIGN_TARGET@/Contents/PlugIns/belnet-extension.appex"
+for file in "@SIGN_TARGET@/Contents/MacOS/belnet" "@SIGN_TARGET@" ; do
+    codesign --verbose=4 --force -s "@CODESIGN_APP@" \
+      --entitlements "@PROJECT_SOURCE_DIR@/contrib/macos/belnet.entitlements.plist" \
+      --deep --strict --timestamp --options=runtime "$file"
+done

@@ -22,7 +22,6 @@ add_executable(testAll
   crypto/test_llarp_crypto.cpp
   crypto/test_llarp_key_manager.cpp
   dns/test_llarp_dns_dns.cpp
-  iwp/test_iwp_session.cpp
   net/test_ip_address.cpp
   net/test_llarp_net.cpp
   net/test_sock_addr.cpp
@@ -53,7 +52,7 @@ add_executable(testAll
 
 target_link_libraries(testAll PUBLIC libbelnet Catch2::Catch2)
 target_include_directories(testAll PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-
+add_log_tag(testAll)
 if(WIN32)
     target_sources(testAll PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/win32/test.rc")
     target_link_libraries(testAll PUBLIC ws2_32 iphlpapi shlwapi)

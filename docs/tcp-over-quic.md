@@ -3,7 +3,7 @@
 In order for belnet to work in an embedded version (which I will call "libbelnet" in this
 document), which belnet cannot create TUN device (either because the host OS doesn't support them,
 or because belnet needs to run without permissions to manage them) belnet needs a solution for
-sending TCP data from the device to a remote belnet client (i.e. a snapp, a mnode, or another
+sending TCP data from the device to a remote belnet client (i.e. a mnapp, a mnode, or another
 libbelnet client).  Since the vast majority of network connectivity relies on TCP stream
 connections, not supporting them would be a severe limitation of a belnet library that would make
 it nearly useless.
@@ -39,7 +39,7 @@ into this TCP connection, and any responses are sent back via the QUIC stream.
 
 ## Example
 
-For example, suppose `snap7.beldex` is a belnet snapp with a web server listening on port 80 and a
+For example, suppose `snap7.beldex` is a belnet mnapp with a web server listening on port 80 and a
 libbelnet client `omg42.beldex` wants to connect to it to retrieve a cat photo.  With a full
 belnet client, the DNS request for `omg56789.beldex` triggers creation of a virtual IP on the TUN
 device, returns the IP to the system, and any TCP packets sent to this IP are forwarded to the
@@ -65,17 +65,17 @@ on this local port it will create a QUIC stream on the established QUIC connecti
 stream data received from the TCP connection into the QUIC stream, and any data that comes back over
 the QUIC stream will similarly be copied into the localhost TCP connection.
 
-Effectively the data path of data send from the app on omg42.beldex to the HTTP snapp on omg42.beldex
+Effectively the data path of data send from the app on omg42.beldex to the HTTP mnapp on omg42.beldex
 looks like this:
 
     ┌omg42.beldex────────────┐                             ┌snap7.beldex───────────┐
-    │ Main app thread      │                             │ HTTP                │
-    │ TCP localhost:4567 ─>│─┐                           │ TCP 172.16.0.1:80 <─│─┐
-    ├──────────────────────┤ │                           ╞═════════════════════╡ │
-    │ libbelnet (in app)  │ │                           │ belnet (on host)   │ │
-    │ TCP localhost:4567 <─│─┘                         ┌>│─> QUIC UDP          │ │
-    │           QUIC UDP ─>│───... Belnet routers ...─┘ │ TCP 172.16.0.1:80 ─>│─┘
-    └──────────────────────┘                             └─────────────────────┘
+    │ Main app thread        │                             │ HTTP                  │
+    │ TCP localhost:4567 ───>│─┐                           │ TCP 172.16.0.1:80 <───│─┐
+    ├────────────────────────┤ │                           ╞═══════════════════════╡ │
+    │ libbelnet (in app)     │ │                           │ belnet (on host)      │ │
+    │ TCP localhost:4567 <───│─┘                         ┌>│─> QUIC UDP            │ │
+    │           QUIC UDP ───>│───... Belnet routers ...──┘ │ TCP 172.16.0.1:80 ───>│─┘
+    └────────────────────────┘                             └───────────────────────┘
 
 (These connections are all bi-direction, so any TCP stream data replied from omg42.beldex follows the
 same path in reverse.)
@@ -121,7 +121,7 @@ reverse:
   connections.
 - Should the client require end-point verification libbelnet will provide a function that can look
   up the remote belnet address based on the source port of the TCP connection.  (This is different
-  from but analogous to a snapp doing a reverse DNS lookup on the source address to determine the
+  from but analogous to a mnapp doing a reverse DNS lookup on the source address to determine the
   remote address).
 
 Note: to be externally reachable by other belnet clients, a libbelnet client would have to publish
@@ -144,7 +144,7 @@ conversation initiation) indicates that TCP should be tunneled, we should just d
 The application makes a libbelnet library call such as
 
     belnet_stream_result res;
-    belnet_outbound_stream(&res, "some-snapp.beldex", 2345);
+    belnet_outbound_stream(&res, "some-mnapp.beldex", 2345);
 
 This initiates an outbound connection to the given belnet remote, asking to connect to port 2345 on
 the remote.  Plainquic begins listening on a random localhost port, and returns this via an entry in

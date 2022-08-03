@@ -72,7 +72,7 @@ reg_query_helper()
       continue;
 
     /* Append it to NETWORK_ADAPTERS and open it */
-    snprintf(new_key, sizeof new_key, "%s\\%s",
+    mnprintf(new_key, sizeof new_key, "%s\\%s",
              "SYSTEM\\CurrentControlSet\\Control\\Class\\{4D36E972-E325-11CE-"
              "BFC1-08002BE10318}",
              key);

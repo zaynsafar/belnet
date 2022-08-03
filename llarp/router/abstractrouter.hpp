@@ -210,9 +210,9 @@ namespace llarp
     virtual void
     Die() = 0;
 
-    /// pump low level links
+    /// Trigger a pump of low level links. Idempotent.
     virtual void
-    PumpLL() = 0;
+    TriggerPump() = 0;
 
     virtual bool
     IsBootstrapNode(RouterID r) const = 0;
@@ -323,6 +323,9 @@ namespace llarp
 
     virtual util::StatusObject
     ExtractStatus() const = 0;
+
+    virtual util::StatusObject
+    ExtractSummaryStatus() const = 0;
 
     /// gossip an rc if required
     virtual void
