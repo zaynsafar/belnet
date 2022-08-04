@@ -111,13 +111,12 @@ namespace llarp::uv
   {
     llarp::LogTrace("ticking event loop.");
     FlushLogic();
-    PumpLL();
     auto& log = llarp::LogContext::Instance();
     if (log.logStream)
       log.logStream->Tick(time_now());
   }
 
-  Loop::Loop(size_t queue_size) : llarp::EventLoop{}, PumpLL{[] {}}, m_LogicCalls{queue_size}
+  Loop::Loop(size_t queue_size) : llarp::EventLoop{}, m_LogicCalls{queue_size}
   {
     if (!(m_Impl = uvw::Loop::create()))
       throw std::runtime_error{"Failed to construct libuv loop"};
@@ -159,12 +158,6 @@ namespace llarp::uv
   Loop::wakeup()
   {
     m_WakeUp->send();
-  }
-
-  void
-  Loop::set_pump_function(std::function<void(void)> pump)
-  {
-    PumpLL = std::move(pump);
   }
 
   std::shared_ptr<llarp::UDPHandle>
@@ -244,7 +237,7 @@ namespace llarp::uv
       std::shared_ptr<llarp::vpn::NetworkInterface> netif,
       std::function<void(llarp::net::IPPacket)> handler)
   {
-#ifndef _WIN32
+#ifdef __linux__
     using event_t = uvw::PollEvent;
     auto handle = m_Impl->resource<uvw::PollHandle>(netif->PollFD());
 #else
@@ -264,7 +257,7 @@ namespace llarp::uv
       }
     });
 
-#ifndef _WIN32
+#ifdef __linux__
     handle->start(uvw::PollHandle::Event::READABLE);
 #else
     handle->start();

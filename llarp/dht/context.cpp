@@ -171,9 +171,9 @@ namespace llarp
       std::unique_ptr<Bucket<RCNode>> _nodes;
 
       // for introduction sets
-      std::unique_ptr<Bucket<ISNode>> _services;
+      std::unique_ptr<Bucket<IMNode>> _services;
 
-      Bucket<ISNode>*
+      Bucket<IMNode>*
       services() override
       {
         return _services.get();
@@ -467,7 +467,7 @@ namespace llarp
       router = r;
       ourKey = us;
       _nodes = std::make_unique<Bucket<RCNode>>(ourKey, llarp::randint);
-      _services = std::make_unique<Bucket<ISNode>>(ourKey, llarp::randint);
+      _services = std::make_unique<Bucket<IMNode>>(ourKey, llarp::randint);
       llarp::LogDebug("initialize dht with key ", ourKey);
       // start cleanup timer
       _timer_keepalive = std::make_shared<int>(0);

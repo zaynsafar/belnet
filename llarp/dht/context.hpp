@@ -168,7 +168,7 @@ namespace llarp
       virtual const PendingExploreLookups&
       pendingExploreLookups() const = 0;
 
-      virtual Bucket<ISNode>*
+      virtual Bucket<IMNode>*
       services() = 0;
 
       virtual bool&

@@ -45,7 +45,7 @@ namespace llarp
       llarp_time_t lastGoodSend = 0s;
       const llarp_time_t createdAt;
       llarp_time_t sendTimeout = path::build_timeout;
-      llarp_time_t connectTimeout = path::build_timeout;
+      llarp_time_t connectTimeout = path::build_timeout * 2;
       llarp_time_t shiftTimeout = (path::build_timeout * 5) / 2;
       llarp_time_t estimatedRTT = 0s;
       bool markedBad = false;
@@ -55,8 +55,6 @@ namespace llarp
       thread::Queue<SendEvent_t> m_SendQueue;
 
       std::function<void(AuthResult)> authResultListener;
-
-      std::shared_ptr<EventLoopWakeup> m_FlushWakeup;
 
       virtual bool
       ShiftIntroduction(bool rebuild = true)

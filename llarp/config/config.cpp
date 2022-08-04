@@ -3,7 +3,6 @@
 
 #include "config/definition.hpp"
 #include "ini.hpp"
-#include <llarp/constants/defaults.hpp>
 #include <llarp/constants/files.hpp>
 #include <llarp/net/net.hpp>
 #include <llarp/net/ip.hpp>
@@ -374,7 +373,7 @@ namespace llarp
         ReachableDefault,
         AssignmentAcceptor(m_reachable),
         Comment{
-            "Determines whether we will publish our snapp's introset to the DHT.",
+            "Determines whether we will publish our mnapp's introset to the DHT.",
         });
 
     conf.defineOption<int>(
@@ -570,7 +569,13 @@ namespace llarp
         IP6RangeDefault,
         [this](std::string arg) {
           if (arg.empty())
+          {
+            LogError(
+                "!!! Disabling ipv6 tunneling when you have ipv6 routes WILL lead to "
+                "de-anonymization as belnet will no longer carry your ipv6 traffic !!!");
+            m_baseV6Address = std::nullopt;
             return;
+          }
           m_baseV6Address = huint128_t{};
           if (not m_baseV6Address->FromString(arg))
             throw std::invalid_argument(
@@ -647,7 +652,7 @@ namespace llarp
         ClientOnly,
         MultiValue,
         Comment{
-            "Specify SRV Records for services hosted on the SNApp",
+            "Specify SRV Records for services hosted on the MNApp",
             "for more info see https://docs.beldex.network/Belnet/Guides/HostingSNApps/",
             "srv=_service._protocol priority weight port target.beldex",
         },
@@ -711,6 +716,8 @@ namespace llarp
     // Default, but if we get any upstream (including upstream=, i.e. empty string) we clear it
     constexpr Default DefaultUpstreamDNS{"1.1.1.1"};
     m_upstreamDNS.emplace_back(DefaultUpstreamDNS.val);
+    if (!m_upstreamDNS.back().getPort())
+      m_upstreamDNS.back().setPort(53);
 
     conf.defineOption<std::string>(
         "dns",
@@ -798,7 +805,7 @@ namespace llarp
     {
       info.interface = std::string{name};
 
-      std::vector<std::string_view> splits = split(value, ',');
+      std::vector<std::string_view> splits = split(value, ",");
       for (std::string_view str : splits)
       {
         int asNum = std::atoi(str.data());
@@ -974,7 +981,7 @@ namespace llarp
         "rpc",
         RelayOnly,
         Comment{
-            "beldexmq control address for for communicating with beldexd. Depends on beldexd's",
+            "lokiMQ control address for for communicating with beldexd. Depends on beldexd's",
             "lmq-local-control configuration option. By default this value should be",
             "ipc://BELDEXD-DATA-DIRECTORY/beldexd.sock, such as:",
             "    rpc=ipc:///var/lib/beldex/beldexd.sock",
@@ -1047,7 +1054,6 @@ namespace llarp
         Comment{
             "Log type (format). Valid options are:",
             "  file - plaintext formatting",
-            "  json - json-formatted log statements",
             "  syslog - logs directed to syslog",
         });
 

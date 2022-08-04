@@ -104,7 +104,7 @@
 *** exit::Endpoint
 **** mnode/exit side of an exit::Session
 
-** snapp / exit / mobile / null frontend handlers
+** mnapp / exit / mobile / null frontend handlers
 *** handlers::TunEndpoint
 **** extends service::Endpoint
 **** provides tun interface frontend for hidden service backend

@@ -35,14 +35,6 @@ namespace llarp
     return o.str();
   }
 
-  /// Split a string on a given delimiter
-  //
-  /// @param str is the string to split
-  /// @param delimiter is the character to split on
-  /// @return a vector of std::string_views with the split words, excluding the delimeter
-  std::vector<std::string_view>
-  split(const std::string_view str, char delimiter);
-
   using namespace std::literals;
 
   /// Returns true if the first string is equal to the second string, compared case-insensitively.
@@ -76,6 +68,15 @@ namespace llarp
   ends_with(std::string_view str, std::string_view suffix)
   {
     return str.size() >= suffix.size() && str.substr(str.size() - suffix.size()) == suffix;
+  }
+
+  /// removes a prefix from a string if it exists
+  inline std::string_view
+  strip_prefix(std::string_view str, std::string_view prefix)
+  {
+    if (starts_with(str, prefix))
+      return str.substr(prefix.size());
+    return str;
   }
 
   /// Splits a string on some delimiter string and returns a vector of string_view's pointing into

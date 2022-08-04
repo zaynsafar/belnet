@@ -470,6 +470,7 @@ namespace llarp
       if (itr == Sessions().end())
         return false;
       si = itr->second.remote;
+      si.UpdateAddr();
       return true;
     }
 
@@ -1078,35 +1079,30 @@ namespace llarp
     void
     Endpoint::FlushRecvData()
     {
-      do
+      while (auto maybe = m_RecvQueue.tryPopFront())
       {
-        auto maybe = m_RecvQueue.tryPopFront();
-        if (not maybe)
-          return;
-        auto ev = std::move(*maybe);
+        auto& ev = *maybe;
         ProtocolMessage::ProcessAsync(ev.fromPath, ev.pathid, ev.msg);
-      } while (true);
+      }
     }
 
     void
     Endpoint::QueueRecvData(RecvDataEvent ev)
     {
-      if (m_RecvQueue.full() or m_RecvQueue.empty())
-      {
-        m_router->loop()->call_soon([this] { FlushRecvData(); });
-      }
       m_RecvQueue.tryPushBack(std::move(ev));
+      Router()->TriggerPump();
     }
 
     bool
     Endpoint::HandleDataMessage(
-        path::Path_ptr, const PathID_t from, std::shared_ptr<ProtocolMessage> msg)
+        path::Path_ptr p, const PathID_t from, std::shared_ptr<ProtocolMessage> msg)
     {
       PutSenderFor(msg->tag, msg->sender, true);
       Introduction intro = msg->introReply;
       if (HasInboundConvo(msg->sender.Addr()))
       {
         intro.pathID = from;
+        intro.router = p->Endpoint();
       }
       PutReplyIntroFor(msg->tag, intro);
       ConvoTagRX(msg->tag);
@@ -1165,6 +1161,7 @@ namespace llarp
           || (msg->proto == ProtocolType::QUIC and m_quic))
       {
         m_InboundTrafficQueue.tryPushBack(std::move(msg));
+        Router()->TriggerPump();
         return true;
       }
       if (msg->proto == ProtocolType::Control)
@@ -1585,7 +1582,7 @@ namespace llarp
           if (*ptr == m_Identity.pub.Addr())
           {
             ConvoTagTX(tag);
-            Loop()->wakeup();
+            m_state->m_Router->TriggerPump();
             if (not HandleInboundPacket(tag, pkt, t, 0))
               return false;
             ConvoTagRX(tag);
@@ -1594,7 +1591,6 @@ namespace llarp
         }
         if (not SendToOrQueue(*maybe, pkt, t))
           return false;
-        Loop()->wakeup();
         return true;
       }
       LogDebug("SendToOrQueue failed: no endpoint for convo tag ", tag);
@@ -1608,16 +1604,19 @@ namespace llarp
       auto pkt = std::make_shared<net::IPPacket>();
       if (!pkt->Load(buf))
         return false;
-      EnsurePathToMNode(addr, [=](RouterID, exit::BaseSession_ptr s, ConvoTag) {
-        if (s)
-        {
-          s->SendPacketToRemote(pkt->ConstBuffer(), t);
-        }
-      });
+      EnsurePathToMNode(
+          addr, [this, t, pkt = std::move(pkt)](RouterID, exit::BaseSession_ptr s, ConvoTag) {
+            if (s)
+            {
+              s->SendPacketToRemote(pkt->ConstBuffer(), t);
+              Router()->TriggerPump();
+            }
+          });
       return true;
     }
 
-    void Endpoint::Pump(llarp_time_t)
+    void
+    Endpoint::Pump(llarp_time_t now)
     {
       FlushRecvData();
       // send downstream packets to user for mnode
@@ -1656,7 +1655,10 @@ namespace llarp
       auto router = Router();
       // TODO: locking on this container
       for (const auto& [addr, outctx] : m_state->m_RemoteSessions)
+      {
         outctx->FlushUpstream();
+        outctx->Pump(now);
+      }
       // TODO: locking on this container
       for (const auto& [router, session] : m_state->m_MNodeSessions)
         session->FlushUpstream();
@@ -1671,7 +1673,6 @@ namespace llarp
       }
 
       UpstreamFlush(router);
-      router->linkManager().PumpLinks();
     }
 
     std::optional<ConvoTag>
@@ -1875,14 +1876,14 @@ namespace llarp
           f.S = m->seqno;
           f.F = p->intro.pathID;
           transfer->P = replyIntro.pathID;
-          auto self = this;
-          Router()->QueueWork([transfer, p, m, K, self]() {
-            if (not transfer->T.EncryptAndSign(*m, K, self->m_Identity))
+          Router()->QueueWork([transfer, p, m, K, this]() {
+            if (not transfer->T.EncryptAndSign(*m, K, m_Identity))
             {
               LogError("failed to encrypt and sign for sessionn T=", transfer->T.T);
               return;
             }
-            self->m_SendQueue.tryPushBack(SendEvent_t{transfer, p});
+            m_SendQueue.tryPushBack(SendEvent_t{transfer, p});
+            Router()->TriggerPump();
           });
           return true;
         }
@@ -1924,10 +1925,10 @@ namespace llarp
       traffic[remote].emplace_back(data, t);
       EnsurePathToService(
           remote,
-          [self = this](Address addr, OutboundContext* ctx) {
+          [this](Address addr, OutboundContext* ctx) {
             if (ctx)
             {
-              for (auto& pending : self->m_state->m_PendingTraffic[addr])
+              for (auto& pending : m_state->m_PendingTraffic[addr])
               {
                 ctx->AsyncEncryptAndSendTo(pending.Buffer(), pending.protocol);
               }
@@ -1936,7 +1937,7 @@ namespace llarp
             {
               LogWarn("no path made to ", addr);
             }
-            self->m_state->m_PendingTraffic.erase(addr);
+            m_state->m_PendingTraffic.erase(addr);
           },
           PathAlignmentTimeout());
       return true;

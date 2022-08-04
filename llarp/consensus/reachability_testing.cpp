@@ -96,7 +96,7 @@ namespace llarp::consensus
     if (!requeue)
       return std::nullopt;
 
-    // FIXME: when a *new* node comes online we need to inject it into a random position in the SN
+    // FIXME: when a *new* node comes online we need to inject it into a random position in the MN
     // list with probability (L/N) [L = current list size, N = potential list size]
     //
     // (FIXME: put this FIXME in a better place ;-) )
@@ -124,7 +124,8 @@ namespace llarp::consensus
       auto& [pk, retest_time, failures] = failing_queue.top();
       if (retest_time > now)
         break;
-      result.emplace_back(pk, failures);
+      if (failing.count(pk))
+        result.emplace_back(pk, failures);
       failing_queue.pop();
     }
     return result;

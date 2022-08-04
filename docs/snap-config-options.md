@@ -1,5 +1,5 @@
 
-# snapp config options
+# mnapp config options
 
 ## required
 
@@ -14,7 +14,7 @@ ip range of network interface
 the private key to persist address with.
 if not specified the address will be ephemeral.
 ### reachable
-bool value that sets if we publish our snapp to the dht
+bool value that sets if we publish our mnapp to the dht
 `true`: we are reachable via dht
 `false`: we are not reachable via dht
 ### hops
@@ -31,7 +31,7 @@ if port is omitted it uses port `53`
 ### upstream-dns
 address to forward non belnet related queries to. if not set belnet dns will reply with srvfail.
 ### mapaddr
-perma map `.beldex` address to an ip owned by the snapp
+perma map `.beldex` address to an ip owned by the mnapp
 to map `whatever.beldex` to `10.0.10.10` it can be specified via:
 ```
 mapaddr=whatever.beldex:10.0.10.10
@@ -44,4 +44,4 @@ path to shell script to call when our interface is up
 ### on-down
 path to shell script to call when our interface is down
 ### on-ready
-path to shell script to call when snapp is first ready
+path to shell script to call when mnapp is first ready

@@ -73,6 +73,7 @@ Requerimientos de compilación:
 * libsodium >= 1.0.18
 * libunbound
 * libzmq
+* cppzmq
 * sqlite3
 
 ### Linux
@@ -80,7 +81,7 @@ Requerimientos de compilación:
 compilando:
 
     $ sudo apt install build-essential cmake git libcap-dev curl libuv1-dev libsodium-dev pkg-config
-    $ git clone --recursive https://github.com/beldex-coin/belnet
+    $ git clone --recursive https://github.com/Beldex-Coin/belnet.git
     $ cd belnet
     $ mkdir build
     $ cd build
@@ -103,7 +104,7 @@ esto coloca el paquete compilado en `../`
 compilando:
     este seguro que usted tiene cmake, libuv y las herramientas de terminal de xcode ya instaladas
 
-     $ git clone --recursive https://github.com/beldex-coin/belnet
+     $ git clone --recursive https://github.com/Beldex-Coin/belnet
     $ cd belnet
     $ mkdir build
     $ cd build
@@ -119,7 +120,7 @@ instalando:
 compilar (donde `$ARCH` es su plataforma - `i686` or `x86_64`):
 
     $ pacman -Sy base-devel mingw-w64-$ARCH-toolchain git libtool autoconf mingw-w64-$ARCH-cmake
-    $ git clone https://github.com/beldex-coin/belnet.git
+    $ git clone https://github.com/Beldex-Coin/belnet.git
     $ cd belnet
     $ mkdir -p build; cd build
     $ cmake .. -DCMAKE_BUILD_TYPE=[Debug|Release] -DSTATIC_LINK_RUNTIME=ON -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -G 'Unix Makefiles'
@@ -149,7 +150,7 @@ compilando:
     $ sudo pkg install build-essential gcc8 wget tuntap cmake (opcional: ninja ccache - de los extra de omnios) (OmniOS CE)
     $ sudo pkg install base-developer-utilities developer-gnu developer-studio-utilities gcc-7 wget cmake (Solaris de Oracle, ver notas)
     $ sudo pkg install build-essential wget gcc-8 documentation/tuntap header-tun tun (opcional: ninja ccache) (todos los demas SunOS)
-    $ git clone https://github.com/beldex-coin/belnet
+    $ git clone https://github.com/Beldex-Coin/belnet
     $ cd belnet
     $ gmake -j8
 
@@ -167,7 +168,7 @@ PENDIENTE: agregar instrucciones para pkgsrc
 compilando:
 
     # pkg_add curl cmake git (opcional: ninja ccache)
-    $ git clone --recursive https://github.com/beldex-coin/belnet
+    $ git clone --recursive https://github.com/Beldex-Coin/belnet
     $ cd belnet
     $ mkdir build
     $ cd build
@@ -183,7 +184,7 @@ instalando (root):
 compilando:
 
     $ pkg install cmake git curl libuv-1.27.0 libsodium
-    $ git clone --recursive https://github.com/beldex-coin/belnet
+    $ git clone --recursive https://github.com/Beldex-Coin/belnet
     $ cd belnet
     $ mkdir build
     $ cd build

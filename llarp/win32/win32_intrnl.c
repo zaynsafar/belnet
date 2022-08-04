@@ -155,7 +155,7 @@ LONG FAR PASCAL win32_signal_handler(EXCEPTION_POINTERS *e)
   MessageBox(NULL,
              "A fatal error has occurred. A core dump was generated and "
              "dropped in the daemon's working directory. Please create an "
-             "issue at https://github.com/beldex-coin, and "
+             "issue at https://github.com/loki-network/loki-project, and "
              "attach the core dump for further assistance.",
              "Fatal Error", MB_ICONHAND);
   GenerateCrashDump(

@@ -34,7 +34,7 @@ TEST_CASE("Address", "[Address]")
     REQUIRE_FALSE(addr.FromString(mnode, ".beldex"));
   }
 
-  SECTION("Parse Beldex not .MNode")
+  SECTION("Parse Beldex not MNode")
   {
     REQUIRE_FALSE(addr.FromString(beldex, ".mnode"));
     REQUIRE(addr.FromString(beldex, ".beldex"));
@@ -48,7 +48,7 @@ TEST_CASE("Address", "[Address]")
     REQUIRE(addr.ToString() == addr_str);
   };
 
-  SECTION("Parse .MNode with subdomain")
+  SECTION("Parse MNode with subdomain")
   {
     const std::string addr_str = sub + "." + mnode;
     REQUIRE(addr.FromString(addr_str, ".mnode"));

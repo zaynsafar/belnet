@@ -98,7 +98,7 @@ extern "C"
       int socket_id,
       struct belnet_udp_pkt* events,
       size_t max_events,
-      struct belent_context* ctx);
+      struct beldexent_context* ctx);
 
 #ifdef __cplusplus
 }

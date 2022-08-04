@@ -201,7 +201,7 @@ acknolege keep alive message
 
 command: 'n' (advertise neighboors)
 
-tell peer about neighboors, only sent by non master nodes to other non service
+tell peer about neighboors, only sent by non master nodes to other non master
 nodes.
 
 <inner header>
