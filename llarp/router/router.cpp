@@ -167,6 +167,8 @@ namespace llarp
 
     return util::StatusObject{
         {"running", true},
+        {"version", llarp::VERSION_FULL},
+        {"uptime", to_json(Uptime())},
         {"authCodes", services["default"]["authCodes"]},
         {"exitMap", services["default"]["exitMap"]},
         {"beldexAddress", services["default"]["identity"]},
