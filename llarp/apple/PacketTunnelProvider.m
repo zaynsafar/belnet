@@ -191,7 +191,7 @@ static void del_default_route(void* ctx) {
   settings = [[NEPacketTunnelNetworkSettings alloc] initWithTunnelRemoteAddress:@"127.3.2.1"];
 
   NEDNSSettings* dns = [[NEDNSSettings alloc] initWithServers:@[ip]];
-  dns.domainName = @"localhost.beldex";
+  dns.domainName = @"localhost.bdx";
   dns.matchDomains = @[@""];
   // In theory, matchDomains is supposed to be set to DNS suffixes that we resolve.  This seems
   // highly unreliable, though: often it just doesn't work at all (perhaps only if we make ourselves
@@ -202,7 +202,7 @@ static void del_default_route(void* ctx) {
   // https://developer.apple.com/forums/thread/685410).
   //
   // So the documentation sucks and the feature doesn't appear to work, so as much as it would be
-  // nice to capture only .beldex and .mnode when not in exit mode, we can't, so capture everything
+  // nice to capture only .bdx and .mnode when not in exit mode, we can't, so capture everything
   // and use our default upstream.
   dns.matchDomains = @[@""];
   dns.matchDomainsNoSearch = true;

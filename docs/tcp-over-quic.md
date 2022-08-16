@@ -9,7 +9,7 @@ connections, not supporting them would be a severe limitation of a belnet librar
 it nearly useless.
 
 Traditional "full" belnet does not need to solve this problem: it creates virtual IPs on the TUN
-interface that map to every looked-up `.beldex` address and then the host system's in-kernel TCP layer
+interface that map to every looked-up `.bdx` address and then the host system's in-kernel TCP layer
 handles the intricacies of TCP including acknowledgement, retry, and so on.  While there are
 user-space TCP implementations available, they are generally incomplete, unmaintained, or both,
 which would mean substantial work and ongoing maintenance for us to adopt or reimplement such a
@@ -39,11 +39,11 @@ into this TCP connection, and any responses are sent back via the QUIC stream.
 
 ## Example
 
-For example, suppose `snap7.beldex` is a belnet mnapp with a web server listening on port 80 and a
-libbelnet client `omg42.beldex` wants to connect to it to retrieve a cat photo.  With a full
-belnet client, the DNS request for `omg56789.beldex` triggers creation of a virtual IP on the TUN
+For example, suppose `snap7.bdx` is a belnet mnapp with a web server listening on port 80 and a
+libbelnet client `omg42.bdx` wants to connect to it to retrieve a cat photo.  With a full
+belnet client, the DNS request for `omg56789.bdx` triggers creation of a virtual IP on the TUN
 device, returns the IP to the system, and any TCP packets sent to this IP are forwarded to the
-primary belnet IP of `azfoj123.beldex`, where an HTTP server is ready and waiting to provide cat
+primary belnet IP of `azfoj123.bdx`, where an HTTP server is ready and waiting to provide cat
 photos.
 
 With a libbelnet client, this process will looks a little different: the client will first make a
@@ -65,10 +65,10 @@ on this local port it will create a QUIC stream on the established QUIC connecti
 stream data received from the TCP connection into the QUIC stream, and any data that comes back over
 the QUIC stream will similarly be copied into the localhost TCP connection.
 
-Effectively the data path of data send from the app on omg42.beldex to the HTTP mnapp on omg42.beldex
+Effectively the data path of data send from the app on omg42.bdx to the HTTP mnapp on omg42.bdx
 looks like this:
 
-    ┌omg42.beldex────────────┐                             ┌snap7.beldex───────────┐
+    ┌omg42.bdx----───────────┐                             ┌snap7.bdx---───────────┐
     │ Main app thread        │                             │ HTTP                  │
     │ TCP localhost:4567 ───>│─┐                           │ TCP 172.16.0.1:80 <───│─┐
     ├────────────────────────┤ │                           ╞═══════════════════════╡ │
@@ -77,7 +77,7 @@ looks like this:
     │           QUIC UDP ───>│───... Belnet routers ...──┘ │ TCP 172.16.0.1:80 ───>│─┘
     └────────────────────────┘                             └───────────────────────┘
 
-(These connections are all bi-direction, so any TCP stream data replied from omg42.beldex follows the
+(These connections are all bi-direction, so any TCP stream data replied from omg42.bdx follows the
 same path in reverse.)
 
 ## Implementation details/notes
@@ -144,7 +144,7 @@ conversation initiation) indicates that TCP should be tunneled, we should just d
 The application makes a libbelnet library call such as
 
     belnet_stream_result res;
-    belnet_outbound_stream(&res, "some-mnapp.beldex", 2345);
+    belnet_outbound_stream(&res, "some-mnapp.bdx", 2345);
 
 This initiates an outbound connection to the given belnet remote, asking to connect to port 2345 on
 the remote.  Plainquic begins listening on a random localhost port, and returns this via an entry in

@@ -42,7 +42,7 @@ namespace llarp
       bool
       IsName(const std::string& other) const;
 
-      /// is the name [something.]localhost.beldex. ?
+      /// is the name [something.]localhost.bdx. ?
       bool
       IsLocalhost() const;
 

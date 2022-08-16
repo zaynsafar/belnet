@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
 
-  /// get a free()-able null terminated string that holds our .beldex address
+  /// get a free()-able null terminated string that holds our .bdx address
   /// returns NULL if we dont have one right now
   char* EXPORT
   belnet_address(struct belnet_context*);

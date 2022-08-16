@@ -19,10 +19,10 @@ namespace llarp::service
   bool
   NameIsValid(std::string_view lnsName)
   {
-    // make sure it ends with .beldex because no fucking shit right?
-    if (not ends_with(lnsName, ".beldex"))
+    // make sure it ends with .bdx because no fucking shit right?
+    if (not ends_with(lnsName, ".bdx"))
       return false;
-    // strip off .beldex suffix
+    // strip off .bdx suffix
     lnsName = lnsName.substr(0, lnsName.find_last_of('.'));
 
     // ensure chars are sane

@@ -5,7 +5,7 @@
 
 namespace llarp::service
 {
-  const std::set<std::string> Address::AllowedTLDs = {".beldex", ".mnode"};
+  const std::set<std::string> Address::AllowedTLDs = {".bdx", ".mnode"};
 
   bool
   Address::PermitTLD(const char* tld)

@@ -5,7 +5,7 @@
 TEST_CASE("Address", "[Address]")
 {
   const std::string mnode = "8zfiwpgonsu5zpddpxwdurxyb19x6r96xy4qbikff99jwsziws9y.mnode";
-  const std::string beldex = "7okic5x5do3uh3usttnqz9ek3uuoemdrwzto1hciwim9f947or6y.beldex";
+  const std::string beldex = "7okic5x5do3uh3usttnqz9ek3uuoemdrwzto1hciwim9f947or6y.bdx";
   const std::string sub = "belnet.test";
   const std::string invalid = "7okic5x5do3uh3usttnqz9ek3uuoemdrwzto1hciwim9f947or6y.net";
   llarp::service::Address addr;
@@ -31,19 +31,19 @@ TEST_CASE("Address", "[Address]")
   SECTION("Parse MNode not Beldex")
   {
     REQUIRE(addr.FromString(mnode, ".mnode"));
-    REQUIRE_FALSE(addr.FromString(mnode, ".beldex"));
+    REQUIRE_FALSE(addr.FromString(mnode, ".bdx"));
   }
 
   SECTION("Parse Beldex not MNode")
   {
     REQUIRE_FALSE(addr.FromString(beldex, ".mnode"));
-    REQUIRE(addr.FromString(beldex, ".beldex"));
+    REQUIRE(addr.FromString(beldex, ".bdx"));
   }
 
   SECTION("Parse Beldex with subdomain")
   {
     const std::string addr_str = sub + "." + beldex;
-    REQUIRE(addr.FromString(addr_str, ".beldex"));
+    REQUIRE(addr.FromString(addr_str, ".bdx"));
     REQUIRE(addr.subdomain == sub);
     REQUIRE(addr.ToString() == addr_str);
   };

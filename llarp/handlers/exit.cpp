@@ -206,7 +206,7 @@ namespace llarp
       if (msg.questions[0].qtype == dns::qTypeA || msg.questions[0].qtype == dns::qTypeCNAME
           || msg.questions[0].qtype == dns::qTypeAAAA)
       {
-        if (msg.questions[0].IsName("localhost.beldex"))
+        if (msg.questions[0].IsName("localhost.bdx"))
           return true;
         if (msg.questions[0].HasTLD(".mnode"))
           return true;
@@ -249,7 +249,7 @@ namespace llarp
           else
             msg.AddNXReply();
         }
-        else if (msg.questions[0].IsName("localhost.beldex"))
+        else if (msg.questions[0].IsName("localhost.bdx"))
         {
           RouterID us = m_Router->pubkey();
           msg.AddAReply(us.ToString(), 1);
@@ -275,7 +275,7 @@ namespace llarp
           reply(msg);
           return true;
         }
-        if (msg.questions[0].IsName("localhost.beldex"))
+        if (msg.questions[0].IsName("localhost.bdx"))
         {
           msg.AddINReply(GetIfAddr(), isV6);
           reply(msg);

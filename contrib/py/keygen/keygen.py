@@ -29,7 +29,7 @@ def main():
         wfile.write(secret.encode())
         wfile.write(secret.verify_key.encode())
         wfile.write(b'e')
-    print("{}.beldex".format(base32z(secret.verify_key.encode())))
+    print("{}.bdx".format(base32z(secret.verify_key.encode())))
 
 if __name__ == '__main__':
     main()

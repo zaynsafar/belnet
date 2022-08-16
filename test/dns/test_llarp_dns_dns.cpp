@@ -9,16 +9,16 @@
 
 #include <algorithm>
 
-constexpr auto tld = ".beldex";
+constexpr auto tld = ".bdx";
 
 TEST_CASE("Test Has TLD", "[dns]")
 {
   llarp::dns::Question question;
-  question.qname = "a.beldex.";
+  question.qname = "a.bdx.";
   CHECK(question.HasTLD(tld));
-  question.qname = "a.beldex..";
+  question.qname = "a.bdx..";
   CHECK(not question.HasTLD(tld));
-  question.qname = "bepis.beldex.";
+  question.qname = "bepis.bdx.";
   CHECK(question.HasTLD(tld));
   question.qname = "bepis.logi.";
   CHECK(not question.HasTLD(tld));
@@ -30,22 +30,22 @@ TEST_CASE("Test Has TLD", "[dns]")
   CHECK(not question.HasTLD(tld));
 };
 
-TEST_CASE("Test Is Localhost.beldex", "[dns]")
+TEST_CASE("Test Is Localhost.bdx", "[dns]")
 {
   llarp::dns::Question question;
 
-  question.qname = "localhost.beldex.";
+  question.qname = "localhost.bdx.";
   CHECK(question.IsLocalhost());
-  question.qname = "foo.localhost.beldex.";
+  question.qname = "foo.localhost.bdx.";
   CHECK(question.IsLocalhost());
-  question.qname = "foo.bar.localhost.beldex.";
+  question.qname = "foo.bar.localhost.bdx.";
   CHECK(question.IsLocalhost());
 
-  question.qname = "something.beldex.";
+  question.qname = "something.bdx.";
   CHECK(not question.IsLocalhost());
-  question.qname = "localhost.something.beldex.";
+  question.qname = "localhost.something.bdx.";
   CHECK(not question.IsLocalhost());
-  question.qname = "notlocalhost.beldex.";
+  question.qname = "notlocalhost.bdx.";
   CHECK(not question.IsLocalhost());
 };
 
@@ -54,24 +54,24 @@ TEST_CASE("Test Get Subdomains" , "[dns]")
   llarp::dns::Question question;
   std::string expected;
 
-  question.qname = "localhost.beldex.";
+  question.qname = "localhost.bdx.";
   expected = "";
   CHECK(question.Subdomains() == expected);
 
-  question.qname = "foo.localhost.beldex.";
+  question.qname = "foo.localhost.bdx.";
   expected = "foo";
   CHECK(question.Subdomains() == expected);
 
-  question.qname = "foo.bar.localhost.beldex.";
+  question.qname = "foo.bar.localhost.bdx.";
   expected = "foo.bar";
   CHECK(question.Subdomains() == expected);
 
   // not legal, but test it anyway
-  question.qname = ".localhost.beldex.";
+  question.qname = ".localhost.bdx.";
   expected = "";
   CHECK(question.Subdomains() == expected);
 
-  question.qname = ".beldex.";
+  question.qname = ".bdx.";
   expected = "";
   CHECK(question.Subdomains() == expected);
 

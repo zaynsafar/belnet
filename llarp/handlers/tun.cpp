@@ -482,7 +482,7 @@ namespace llarp
           auto replyMsg = std::make_shared<dns::Message>(clear_dns_message(msg));
           return ReplyToMNodeDNSWhenReady(addr, std::move(replyMsg), false);
         }
-        else if (answer.HasCNameForTLD(".beldex"))
+        else if (answer.HasCNameForTLD(".bdx"))
         {
           dns::Name_t qname;
           llarp_buffer_t buf(answer.rData);
@@ -505,10 +505,10 @@ namespace llarp
       std::string qname = msg.questions[0].Name();
       const auto nameparts = split(qname, ".");
       std::string lnsName;
-      if (nameparts.size() >= 2 and ends_with(qname, ".beldex"))
+      if (nameparts.size() >= 2 and ends_with(qname, ".bdx"))
       {
         lnsName = nameparts[nameparts.size() - 2];
-        lnsName += ".beldex"sv;
+        lnsName += ".bdx"sv;
       }
       if (msg.questions[0].qtype == dns::qTypeTXT)
       {
@@ -571,7 +571,7 @@ namespace llarp
       {
         // mx record
         service::Address addr;
-        if (addr.FromString(qname, ".beldex") || addr.FromString(qname, ".mnode")
+        if (addr.FromString(qname, ".bdx") || addr.FromString(qname, ".mnode")
             || is_random_mnode(msg) || is_localhost_beldex(msg))
         {
           msg.AddMXReply(qname, 1);
@@ -644,7 +644,7 @@ namespace llarp
         llarp::service::Address addr;
         if (isV6 && !SupportsV6())
         {  // empty reply but not a NXDOMAIN so that client can retry IPv4
-          msg.AddNSReply("localhost.beldex.");
+          msg.AddNSReply("localhost.bdx.");
         }
         // on MacOS this is a typeA query
         else if (is_random_mnode(msg))
@@ -688,7 +688,7 @@ namespace llarp
             msg.AddNXReply();
           }
         }
-        else if (addr.FromString(qname, ".beldex"))
+        else if (addr.FromString(qname, ".bdx"))
         {
           if (isV4 && SupportsV6())
           {
@@ -768,7 +768,7 @@ namespace llarp
           reply(msg);
           return true;
         }
-        else if (addr.FromString(qname, ".beldex"))
+        else if (addr.FromString(qname, ".bdx"))
         {
           llarp::LogDebug("SRV request for: ", qname);
 
@@ -802,8 +802,8 @@ namespace llarp
       llarp::service::Address addr;
       if (msg.questions.size() == 1)
       {
-        /// hook every .beldex
-        if (msg.questions[0].HasTLD(".beldex"))
+        /// hook every .bdx
+        if (msg.questions[0].HasTLD(".bdx"))
           return true;
         /// hook every .mnode
         if (msg.questions[0].HasTLD(".mnode"))
@@ -819,7 +819,7 @@ namespace llarp
       }
       for (const auto& answer : msg.answers)
       {
-        if (answer.HasCNameForTLD(".beldex"))
+        if (answer.HasCNameForTLD(".bdx"))
           return true;
         if (answer.HasCNameForTLD(".mnode"))
           return true;
@@ -945,7 +945,7 @@ namespace llarp
       systemd_resolved_set_dns(
           m_IfName,
           m_LocalResolverAddr.createSockAddr(),
-          false /* just .beldex/.mnode DNS initially */);
+          false /* just .bdx/.mnode DNS initially */);
 
       if (m_OnUp)
       {

@@ -199,7 +199,7 @@ the "network address" of a hidden service, which is computed as the blake2b
 
 HS(BE(SI))
 
-when in string form it's encoded with z-base32 and uses the .beldex tld
+when in string form it's encoded with z-base32 and uses the .bdx tld
 
 introduction (I)
 
@@ -252,7 +252,7 @@ each service is a 7 item long, list of the following:
 
 with the corrisponding SRV record: 
 
-<_service>.<_proto>.<service_address>.beldex. <ttl_uint> IN SRV <priority_uint> <weight_uint> <port_uint> <SA of sub service>.beldex.
+<_service>.<_proto>.<service_address>.bdx. <ttl_uint> IN SRV <priority_uint> <weight_uint> <port_uint> <SA of sub service>.bdx.
 
 recursion on SRV records is NOT permitted.
 
