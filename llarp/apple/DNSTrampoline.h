@@ -17,7 +17,7 @@ extern NSString* error_domain;
  * - DNS requests go to TUNNELIP:53, get send to libunbound, which forwards them to 127.0.0.1:1053,
  *   which encapsulates them in Apple's god awful crap, then (on a response) sends them back to
  *   libunbound.
- * (This assumes a non-belnet DNS; .beldex and .mnode get handled before either of these).
+ * (This assumes a non-belnet DNS; .bdx and .mnode get handled before either of these).
  */
 @interface LLARPDNSTrampoline : NSObject
 {

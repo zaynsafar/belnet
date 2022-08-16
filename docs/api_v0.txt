@@ -45,7 +45,7 @@ Introduction: a hidden service introduction
 ServiceInfo: public key info for hidden service address
 
 {
-  A: "<32 bytes .beldex address>",
+  A: "<32 bytes .bdx address>",
   E: "<32 bytes public encryption key>",
   S: "<32 bytes public signing key>"
 }
@@ -156,7 +156,7 @@ create a new convseration on a beldex/mnode address (C->S)
   A: "start-convo",
   B: "<8 bytes random>",
   C: "<16 bytes session cookie>",
-  R: "human readable remote address .mnode/.beldex",
+  R: "human readable remote address .mnode/.bdx",
   Y: sequence_num_uint64,
   Z: "<32 bytes keyed hash>"
 }
@@ -197,7 +197,7 @@ S bit 4: we are an inbound converstation (set by inbound)
 {
   A: "convo-status",
   C: "<16 bytes session cookie>",
-  R: "human readable address .mnode/.beldex",
+  R: "human readable address .mnode/.bdx",
   S: bitmask_status_uint64,
   T: "<16 bytes convotag>",
   Y: sequence_num_uint64,

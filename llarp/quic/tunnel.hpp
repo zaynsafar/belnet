@@ -83,8 +83,8 @@ namespace llarp::quic
     /// Opens a quic tunnel to some remote belnet address.  (Should only be called from the event
     /// loop thread.)
     ///
-    /// \param remote_addr is the belnet address or ONS name (e.g. `azfojblahblahblah.beldex` or
-    /// `blocks.beldex`) that the tunnel should connect to.
+    /// \param remote_addr is the belnet address or ONS name (e.g. `azfojblahblahblah.bdx` or
+    /// `blocks.bdx`) that the tunnel should connect to.
     /// \param port is the tunneled port on the remote that the client wants to reach.  (This is
     /// *not* the quic pseudo-port, which is always 0).
     /// \param callback callback invoked when the quic connection has been established, or has timed

@@ -26,8 +26,8 @@ namespace llarp::dns
       return false;
     }
 
-    // does target end in .beldex?
-    size_t pos = target.find(".beldex");
+    // does target end in .bdx?
+    size_t pos = target.find(".bdx");
     if (pos != std::string::npos && pos == (target.size() - 5))
     {
       return true;

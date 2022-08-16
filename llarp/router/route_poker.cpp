@@ -185,7 +185,7 @@ namespace llarp
     systemd_resolved_set_dns(
         m_Router->hiddenServiceContext().GetDefault()->GetIfName(),
         m_Router->GetConfig()->dns.m_bind,
-        false /* route DNS only for .beldex/.mnode */);
+        false /* route DNS only for .bdx/.mnode */);
   }
 
   void

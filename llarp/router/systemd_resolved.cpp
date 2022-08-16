@@ -180,7 +180,7 @@ namespace llarp
             "."      // global DNS root
         );
       else
-        // Only resolve .beldex and .mnode through belnet (so you keep using your local DNS server
+        // Only resolve .bdx and .mnode through belnet (so you keep using your local DNS server
         // for everything else, which is nicer than forcing everything though belnet's upstream
         // DNS).
         resolved_call(

@@ -208,8 +208,8 @@ class Monitor:
         paths = status["paths"]
         self.win.addstr("paths: {}".format(len(paths)))
         for path in paths:
-            if self.filter('localhost.beldex'):
-                y_pos = self._render_path(y_pos, path, "localhost.beldex")
+            if self.filter('localhost.bdx'):
+                y_pos = self._render_path(y_pos, path, "localhost.bdx")
         for session in (status["remoteSessions"] or []):
             for path in session["paths"]:
                 if self.filter(session["remoteIdentity"]):
@@ -417,8 +417,8 @@ class Monitor:
         """
         y_pos += 1
         self.win.move(y_pos, 1)
-        if self.filter("localhost.beldex"):
-            self.win.addstr("localhost.beldex")
+        if self.filter("localhost.bdx"):
+            self.win.addstr("localhost.bdx")
             y_pos = self._display_our_introset(y_pos, service)
             y_pos += 1
         remotes = service['remoteSessions'] or []

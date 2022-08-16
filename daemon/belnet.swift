@@ -35,7 +35,7 @@ class BelnetMain: NSObject, NSApplicationDelegate {
                 }
             }
             let providerProtocol = NETunnelProviderProtocol()
-            providerProtocol.serverAddress = "beldex.beldex" // Needs to be set to some non-null dummy value
+            providerProtocol.serverAddress = "beldex.bdx" // Needs to be set to some non-null dummy value
             providerProtocol.username = "anonymous"
             providerProtocol.providerBundleIdentifier = self.belnetComponent
             providerProtocol.enforceRoutes = true

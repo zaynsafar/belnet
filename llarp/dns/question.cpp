@@ -75,7 +75,7 @@ namespace llarp
     bool
     Question::IsLocalhost() const
     {
-      return (qname == "localhost.beldex." or llarp::ends_with(qname, ".localhost.beldex."));
+      return (qname == "localhost.bdx." or llarp::ends_with(qname, ".localhost.bdx."));
     }
 
     bool

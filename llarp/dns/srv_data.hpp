@@ -26,7 +26,7 @@ namespace llarp::dns
     // options:
     //   empty                     - refer to query name
     //   dot                       - authoritative "no such service available"
-    //   any other .beldex or .mnode - target is that .beldex or .mnode
+    //   any other .bdx or .mnode - target is that .bdx or .mnode
     std::string target;
 
     // do some basic validation on the target string
@@ -74,11 +74,11 @@ namespace llarp::dns
      *
      * target can be empty, in which case the space after port should
      * be omitted.  if this is the case, the target is
-     * interpreted as the .beldex or .mnode of the current context.
+     * interpreted as the .bdx or .mnode of the current context.
      *
      * if target is not empty, it must be either
      *  - simply a full stop (dot/period) OR
-     *  - a name within the .beldex or .mnode subdomains. a target
+     *  - a name within the .bdx or .mnode subdomains. a target
      *    specified in this manner must not end with a full stop.
      */
     bool

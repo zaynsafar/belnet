@@ -66,7 +66,7 @@ namespace llarp
       std::ostream&
       print(std::ostream& stream, int level, int spaces) const;
 
-      /// .beldex address
+      /// .bdx address
       std::string
       Name() const;
 
