@@ -64,6 +64,7 @@ Belnet - реализация LLARP (протокол анонимной мар�
 * libsodium >= 1.0.18
 * libunbound
 * libzmq
+* cppzmq
 * sqlite3
 
 ### Linux
@@ -71,7 +72,7 @@ Belnet - реализация LLARP (протокол анонимной мар�
 сборка:
 
     $ sudo apt install build-essential cmake git libcap-dev curl libuv1-dev libsodium-dev pkg-config
-    $ git clone --recursive https://github.com/beldex-coin/belnet
+    $ git clone --recursive https://github.com/Beldex-Coin/belnet
     $ cd belnet
     $ mkdir build
     $ cd build
@@ -87,7 +88,7 @@ Belnet - реализация LLARP (протокол анонимной мар�
 сборка:
     убедитесь, что у вас установлены инструменты командной строки cmake, libuv и xcode
 
-    $ git clone --recursive https://github.com/beldex-coin/belnet
+    $ git clone --recursive https://github.com/Beldex-Coin/belnet
     $ cd belnet
     $ mkdir build
     $ cd build
@@ -113,7 +114,7 @@ Belnet - реализация LLARP (протокол анонимной мар�
 
 сборка:
 
-    $ git clone --recursive https://github.com/beldex-coin/belnet
+    $ git clone --recursive https://github.com/Beldex-Coin/belnet
     $ cd belnet
     $ mkdir build-windows
     $ cd build-windows
@@ -133,7 +134,7 @@ Belnet - реализация LLARP (протокол анонимной мар�
     $ sudo pkg install build-essential gcc8 wget tuntap cmake (optional: ninja ccache - from omnios extra) (OmniOS CE)
     $ sudo pkg install base-developer-utilities developer-gnu developer-studio-utilities gcc-7 wget cmake (Oracle Solaris, see note)
     $ sudo pkg install build-essential wget gcc-8 documentation/tuntap header-tun tun (optional: ninja ccache) (all other SunOS)
-    $ git clone --recursive https://github.com/beldex-coin/belnet
+    $ git clone --recursive https://github.com/Beldex-Coin/belnet
     $ cd belnet
     $ mkdir build
     $ cd build
@@ -149,7 +150,7 @@ Belnet - реализация LLARP (протокол анонимной мар�
 сборка:
 
     $ pkg install cmake git curl libuv libsodium pkgconf libunbound
-    $ git clone --recursive https://github.com/beldex-coin/belnet
+    $ git clone --recursive https://github.com/Beldex-Coin/belnet
     $ cd belnet
     $ mkdir build
     $ cmake -DCMAKE_BUILD_TYPE=Release ..

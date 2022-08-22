@@ -35,7 +35,7 @@ namespace llarp
     BeldexdRpcClient::BeldexdRpcClient(LMQ_ptr lmq, std::weak_ptr<AbstractRouter> r)
         : m_lokiMQ{std::move(lmq)}, m_Router{std::move(r)}
     {
-      // m_lokiMQ->log_level(toBeldexMQLogLevel(LogLevel::Instance().curLevel));
+      // m_lokiMQ->log_level(toLokiMQLogLevel(LogLevel::Instance().curLevel));
 
       // new block handler
       m_lokiMQ->add_category("notify", oxenmq::Access{oxenmq::AuthLevel::none})
@@ -374,7 +374,7 @@ namespace llarp
         {
           LogWarn("HandleGetPeerStats called when router has no peerDb set up.");
 
-          // TODO: this can sometimes occur if belnetd hits our API before we're done configuring
+          // TODO: this can sometimes occur if beldexd hits our API before we're done configuring
           //       (mostly an issue in a loopback testnet)
           msg.send_reply("EAGAIN");
           return;
@@ -386,7 +386,7 @@ namespace llarp
           // format)
           if (msg.data.empty())
           {
-            LogWarn("belnetd requested peer stats with no request body");
+            LogWarn("beldexd requested peer stats with no request body");
             msg.send_reply("peer stats request requires list of router IDs");
             return;
           }
@@ -402,7 +402,7 @@ namespace llarp
             RouterID id;
             if (not id.FromString(routerIdString))
             {
-              LogWarn("belnetd sent us an invalid router id: ", routerIdString);
+              LogWarn("beldexd sent us an invalid router id: ", routerIdString);
               msg.send_reply("Invalid router id");
               return;
             }

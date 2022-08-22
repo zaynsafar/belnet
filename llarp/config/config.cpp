@@ -3,7 +3,6 @@
 
 #include "config/definition.hpp"
 #include "ini.hpp"
-#include <llarp/constants/defaults.hpp>
 #include <llarp/constants/files.hpp>
 #include <llarp/net/net.hpp>
 #include <llarp/net/ip.hpp>
@@ -358,7 +357,7 @@ namespace llarp
         ClientOnly,
         MultiValue,
         Comment{
-            "manually add a remote endpoint by .beldex address to the access whitelist",
+            "manually add a remote endpoint by .bdx address to the access whitelist",
         },
         [this](std::string arg) {
           service::Address addr;
@@ -374,7 +373,7 @@ namespace llarp
         ReachableDefault,
         AssignmentAcceptor(m_reachable),
         Comment{
-            "Determines whether we will publish our snapp's introset to the DHT.",
+            "Determines whether we will publish our mnapp's introset to the DHT.",
         });
 
     conf.defineOption<int>(
@@ -456,10 +455,10 @@ namespace llarp
         "exit-node",
         ClientOnly,
         Comment{
-            "Specify a `.beldex` address and an optional ip range to use as an exit broker.",
+            "Specify a `.bdx` address and an optional ip range to use as an exit broker.",
             "Example:",
-            "exit-node=whatever.beldex # maps all exit traffic to whatever.beldex",
-            "exit-node=stuff.beldex:100.0.0.0/24 # maps 100.0.0.0/24 to stuff.beldex",
+            "exit-node=whatever.bdx # maps all exit traffic to whatever.bdx",
+            "exit-node=stuff.bdx:100.0.0.0/24 # maps 100.0.0.0/24 to stuff.bdx",
         },
         [this](std::string arg) {
           if (arg.empty())
@@ -500,8 +499,8 @@ namespace llarp
         Comment{
             "Specify an optional authentication code required to use a non-public exit node.",
             "For example:",
-            "    exit-auth=myfavouriteexit.beldex:abc",
-            "uses the authentication code `abc` whenever myfavouriteexit.beldex is accessed.",
+            "    exit-auth=myfavouriteexit.bdx:abc",
+            "uses the authentication code `abc` whenever myfavouriteexit.bdx is accessed.",
             "Can be specified multiple time to store codes for different exit nodes.",
         },
         [this](std::string arg) {
@@ -514,7 +513,7 @@ namespace llarp
           {
             throw std::invalid_argument(
                 "[network]:exit-auth invalid format, expects "
-                "exit-address.beldex:auth-code-goes-here");
+                "exit-address.bdx:auth-code-goes-here");
           }
           const auto exit_str = arg.substr(0, pos);
           auth.token = arg.substr(pos + 1);
@@ -570,7 +569,13 @@ namespace llarp
         IP6RangeDefault,
         [this](std::string arg) {
           if (arg.empty())
+          {
+            LogError(
+                "!!! Disabling ipv6 tunneling when you have ipv6 routes WILL lead to "
+                "de-anonymization as belnet will no longer carry your ipv6 traffic !!!");
+            m_baseV6Address = std::nullopt;
             return;
+          }
           m_baseV6Address = huint128_t{};
           if (not m_baseV6Address->FromString(arg))
             throw std::invalid_argument(
@@ -583,9 +588,9 @@ namespace llarp
         ClientOnly,
         MultiValue,
         Comment{
-            "Map a remote `.beldex` address to always use a fixed local IP. For example:",
-            "    mapaddr=whatever.beldex:172.16.0.10",
-            "maps `whatever.beldex` to `172.16.0.10` instead of using the next available IP.",
+            "Map a remote `.bdx` address to always use a fixed local IP. For example:",
+            "    mapaddr=whatever.bdx:172.16.0.10",
+            "maps `whatever.bdx` to `172.16.0.10` instead of using the next available IP.",
             "The given IP address must be inside the range configured by ifaddr=",
         },
         [this](std::string arg) {
@@ -647,7 +652,7 @@ namespace llarp
         ClientOnly,
         MultiValue,
         Comment{
-            "Specify SRV Records for services hosted on the SNApp",
+            "Specify SRV Records for services hosted on the MNApp",
             "for more info see https://docs.beldex.network/Belnet/Guides/HostingSNApps/",
             "srv=_service._protocol priority weight port target.beldex",
         },
@@ -711,6 +716,8 @@ namespace llarp
     // Default, but if we get any upstream (including upstream=, i.e. empty string) we clear it
     constexpr Default DefaultUpstreamDNS{"1.1.1.1"};
     m_upstreamDNS.emplace_back(DefaultUpstreamDNS.val);
+    if (!m_upstreamDNS.back().getPort())
+      m_upstreamDNS.back().setPort(53);
 
     conf.defineOption<std::string>(
         "dns",
@@ -798,7 +805,7 @@ namespace llarp
     {
       info.interface = std::string{name};
 
-      std::vector<std::string_view> splits = split(value, ',');
+      std::vector<std::string_view> splits = split(value, ",");
       for (std::string_view str : splits)
       {
         int asNum = std::atoi(str.data());
@@ -974,7 +981,7 @@ namespace llarp
         "rpc",
         RelayOnly,
         Comment{
-            "beldexmq control address for for communicating with beldexd. Depends on beldexd's",
+            "lokiMQ control address for for communicating with beldexd. Depends on beldexd's",
             "lmq-local-control configuration option. By default this value should be",
             "ipc://BELDEXD-DATA-DIRECTORY/beldexd.sock, such as:",
             "    rpc=ipc:///var/lib/beldex/beldexd.sock",
@@ -1047,7 +1054,6 @@ namespace llarp
         Comment{
             "Log type (format). Valid options are:",
             "  file - plaintext formatting",
-            "  json - json-formatted log statements",
             "  syslog - logs directed to syslog",
         });
 

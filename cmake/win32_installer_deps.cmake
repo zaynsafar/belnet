@@ -1,20 +1,15 @@
 if(NOT GUI_ZIP_URL)
-  set(GUI_ZIP_URL "https://oxen.rocks/beldex-coin/beldex-network-control-panel/belnet-gui-windows-32bit-v0.3.8.zip")
+  set(GUI_ZIP_URL "https://deb.beldex.io/Beldex-projects/belnet-gui/belnet-windows.zip")
   set(GUI_ZIP_HASH_OPTS EXPECTED_HASH SHA256=60c2b738cf997e5684f307e5222498fd09143d495a932924105a49bf59ded8bb)
 endif()
 
 set(TUNTAP_URL "https://build.openvpn.net/downloads/releases/latest/tap-windows-latest-stable.exe")
 set(TUNTAP_EXE "${CMAKE_BINARY_DIR}/tuntap-install.exe")
-set(BOOTSTRAP_URL "https://seed.belnet.org/belnet.signed")
-set(BOOTSTRAP_FILE "${CMAKE_BINARY_DIR}/bootstrap.signed")
+set(BOOTSTRAP_FILE "${PROJECT_SOURCE_DIR}/contrib/bootstrap/mainnet.signed")
 
 file(DOWNLOAD
     ${TUNTAP_URL}
     ${TUNTAP_EXE})
-
-file(DOWNLOAD
-    ${BOOTSTRAP_URL}
-    ${BOOTSTRAP_FILE})
 
 file(DOWNLOAD
     ${GUI_ZIP_URL}
@@ -26,7 +21,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_BINARY_DIR}/belnet-gu
 
 install(DIRECTORY ${CMAKE_BINARY_DIR}/gui DESTINATION share COMPONENT gui)
 install(PROGRAMS ${TUNTAP_EXE} DESTINATION bin COMPONENT tuntap)
-install(FILES ${BOOTSTRAP_FILE} DESTINATION share COMPONENT belnet)
+install(FILES ${BOOTSTRAP_FILE} DESTINATION share COMPONENT belnet RENAME bootstrap.signed)
 
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Belnet")
 set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/win32-setup/belnet.ico")

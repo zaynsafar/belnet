@@ -16,28 +16,28 @@ TEST_CASE("Test LNS name decrypt", "[lns]")
   const auto len = recordbin.size() - n.size();
   std::copy_n(recordbin.cbegin() + len, n.size(), n.data());
   std::copy_n(recordbin.cbegin(), len, std::back_inserter(ciphertext));
-  const auto maybe = crypto.maybe_decrypt_name(std::string_view{reinterpret_cast<const char *>(ciphertext.data()), ciphertext.size()}, n, "jason.beldex");
+  const auto maybe = crypto.maybe_decrypt_name(std::string_view{reinterpret_cast<const char *>(ciphertext.data()), ciphertext.size()}, n, "jason.bdx");
   CHECK(maybe.has_value());
   const llarp::service::Address addr{*maybe};
-  CHECK(addr.ToString() == "azfoj73snr9f3neh5c6sf7rtbaeabyxhr1m4un5aydsmsrxo964o.beldex");
+  CHECK(addr.ToString() == "azfoj73snr9f3neh5c6sf7rtbaeabyxhr1m4un5aydsmsrxo964o.bdx");
 }
 
 
 TEST_CASE("Test LNS validity", "[lns]")
 {
-  CHECK(not llarp::service::NameIsValid("beldex.beldex"));
-  CHECK(not llarp::service::NameIsValid("mnode.beldex"));
-  CHECK(not llarp::service::NameIsValid("localhost.beldex"));
-  CHECK(not llarp::service::NameIsValid("gayballs22.beldex.beldex"));
-  CHECK(not llarp::service::NameIsValid("-beldex.beldex"));
-  CHECK(not llarp::service::NameIsValid("super-mario-gayballs-.beldex"));
-  CHECK(not llarp::service::NameIsValid("bn--lolexdeeeeee.beldex"));
-  CHECK(not llarp::service::NameIsValid("2222222222a-.beldex"));
-  CHECK(not llarp::service::NameIsValid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.beldex"));
+  CHECK(not llarp::service::NameIsValid("beldex.bdx"));
+  CHECK(not llarp::service::NameIsValid("mnode.bdx"));
+  CHECK(not llarp::service::NameIsValid("localhost.bdx"));
+  CHECK(not llarp::service::NameIsValid("gayballs22.bdx.bdx"));
+  CHECK(not llarp::service::NameIsValid("-beldex.bdx"));
+  CHECK(not llarp::service::NameIsValid("super-mario-gayballs-.bdx"));
+  CHECK(not llarp::service::NameIsValid("bn--lolexdeeeeee.bdx"));
+  CHECK(not llarp::service::NameIsValid("2222222222a-.bdx"));
+  CHECK(not llarp::service::NameIsValid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bdx"));
   
-  CHECK(llarp::service::NameIsValid("xn--animewasindeedamistake.beldex"));
-  CHECK(llarp::service::NameIsValid("memerionos.beldex"));
-  CHECK(llarp::service::NameIsValid("whyis.xn--animehorrible.beldex"));
-  CHECK(llarp::service::NameIsValid("the.goog.beldex"));
-  CHECK(llarp::service::NameIsValid("420.beldex"));
+  CHECK(llarp::service::NameIsValid("xn--animewasindeedamistake.bdx"));
+  CHECK(llarp::service::NameIsValid("memerionos.bdx"));
+  CHECK(llarp::service::NameIsValid("whyis.xn--animehorrible.bdx"));
+  CHECK(llarp::service::NameIsValid("the.goog.bdx"));
+  CHECK(llarp::service::NameIsValid("420.bdx"));
 }

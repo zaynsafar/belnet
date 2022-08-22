@@ -62,7 +62,7 @@ class AddrGen:
             if ch not in _zalpha:
                 print("invalid prefix, {} not a valid character".format(ch))
                 return None, None
-        print("find ^{}.beldex".format(self.prefix))
+        print("find ^{}.bdx".format(self.prefix))
         i = self._inc
         while i > 0:
             p = Process(target=self._gen_addr_tick, args=(self.prefix, abs(
@@ -128,7 +128,7 @@ def main(args):
     runner = AddrGen(int(args[2]), keys, args[1])
     keys[b'x'], addr = runner.runit()
     if addr:
-        print("found {}.beldex".format(addr))
+        print("found {}.bdx".format(addr))
         with open(args[0], 'wb') as fd:
             enc = bencode.BCodec(fd)
             enc.encode(keys)

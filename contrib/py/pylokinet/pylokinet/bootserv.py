@@ -202,7 +202,7 @@ def fetch_belnet(j, ref="staging", name="build:linux"):
             if selected is None or _compare_dates(build["finished_at"], selected["finished_at"]):
                 selected = build
     if selected and 'id' in selected:
-        url = 'https://gitlab.com/beldex-coin/beldex-network/-/jobs/{}/artifacts/download'.format(selected['id'])
+        url = 'https://gitlab.com/lokiproject/loki-network/-/jobs/{}/artifacts/download'.format(selected['id'])
         r = requests.get(url)
         if r.status_code == 200:
             holder.put(r)

@@ -121,7 +121,7 @@ namespace llarp::consensus
         AbstractRouter* router, const time_point_t& now = clock_t::now(), bool requeue = true);
 
     // Removes and returns up to MAX_RETESTS_PER_TICK nodes that are due to be tested (i.e.
-    // next-testing-time <= now).  Returns [snrecord, #previous-failures] for each.
+    // next-testing-time <= now).  Returns [mnrecord, #previous-failures] for each.
     std::vector<std::pair<RouterID, int>>
     get_failing(const time_point_t& now = clock_t::now());
 

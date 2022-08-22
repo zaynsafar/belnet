@@ -214,7 +214,7 @@ ap.add_argument("--bootstrap", type=str, help="bootstrap file", default="bootstr
 ap.add_argument("--netid", type=str, help="override network id")
 ap.add_argument("--debug", action="store_const", const=True, default=False, help="enable verose logging")
 if bootstrapFromURL:
-    ap.add_argument("--bootstrap-url", type=str, help="bootstrap from remote url", default="https://seed.belnet.org/belnet.signed")
+    ap.add_argument("--bootstrap-url", type=str, help="bootstrap from remote url", default="https://deb.beldex.io/Beldex-projects/Belnet/bootstrap-files/belnet.signed")
 
 args = ap.parse_args()
 addr = (args.ip, args.port)

@@ -25,7 +25,7 @@ extern "C"
   {
     /// the socket id for this flow used for i/o purposes and closing this socket
     int socket_id;
-    /// remote endpoint's .beldex or .mnode address
+    /// remote endpoint's .bdx or .mnode address
     char remote_addr[256];
     /// local endpoint's ip address
     char local_addr[64];
@@ -36,7 +36,7 @@ extern "C"
   };
 
   /// establish an outbound udp flow
-  /// remoteHost is the remote .beldex or .mnode address conneting to
+  /// remoteHost is the remote .bdx or .mnode address conneting to
   /// remotePort is either a string integer or an srv record name to lookup, e.g. thingservice in
   /// which we do a srv lookup for _udp.thingservice.remotehost.tld and use the "best" port provided
   /// localAddr is the local ip:port to bind our socket to, if localAddr is NULL then
@@ -98,7 +98,7 @@ extern "C"
       int socket_id,
       struct belnet_udp_pkt* events,
       size_t max_events,
-      struct belent_context* ctx);
+      struct beldexent_context* ctx);
 
 #ifdef __cplusplus
 }

@@ -39,13 +39,13 @@ if [ -e build-windows ]; then
     # zipit up yo
     archive="$base.zip"
     zip -r "$archive" "$base"
-elif [ -e build-android ] ; then
+elif [ -e belnet.apk ] ; then
     # android af ngl
-    cp -av belnet-jni-* "$base"
-    archive="$base.tar.xz"
-    tar cJvf "$archive" "$base"
+    archive="$base.apk"
+    cp -av belnet.apk "$archive"
 else
-    cp -av daemon/belnet daemon/belnet-vpn daemon/belnet-bootstrap "$base"
+    cp -av daemon/belnet daemon/belnet-vpn "$base"
+    cp -av ../contrib/bootstrap/mainnet.signed "$base/bootstrap.signed"
     # tar dat shiz up yo
     archive="$base.tar.xz"
     tar cJvf "$archive" "$base"

@@ -9,6 +9,6 @@ setup(
   author="jeff",
   author_email="jeff@i2p.rocks",
   description="belnet python bindings",
-  url="https://github.com/beldex-coin/beldex-network",
+  url="https://github.com/loki-project/loki-network",
   install_requires=["pysodium", "requests", "python-dateutil"],
   packages=find_packages())

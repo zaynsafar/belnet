@@ -47,7 +47,7 @@ namespace llarp
       InformConnection(RouterID router, bool success);
 
      private:
-      /// called when we have connected to beldexd via lokimq
+      /// called when we have connected to beldexd via lokiMQ
       void
       Connected();
 

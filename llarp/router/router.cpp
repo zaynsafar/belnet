@@ -12,11 +12,9 @@
 #include <llarp/link/server.hpp>
 #include <llarp/messages/link_message.hpp>
 #include <llarp/net/net.hpp>
-#include <llarp/net/route.hpp>
 #include <stdexcept>
 #include <llarp/util/buffer.hpp>
 #include <llarp/util/logging/file_logger.hpp>
-#include <llarp/util/logging/json_logger.hpp>
 #include <llarp/util/logging/logger_syslog.hpp>
 #include <llarp/util/logging/logger.hpp>
 #include <llarp/util/meta/memfn.hpp>
@@ -71,11 +69,26 @@ namespace llarp
     _running.store(false);
     _lastTick = llarp::time_now_ms();
     m_NextExploreAt = Clock_t::now();
+    m_Pump = _loop->make_waker([this]() { PumpLL(); });
   }
 
   Router::~Router()
   {
     llarp_dht_context_free(_dht);
+  }
+
+  void
+  Router::PumpLL()
+  {
+    llarp::LogTrace("Router::PumpLL() start");
+    if (_stopping.load())
+      return;
+    paths.PumpDownstream();
+    paths.PumpUpstream();
+    _hiddenServiceContext.Pump();
+    _outboundMessageHandler.Pump();
+    _linkManager.PumpLinks();
+    llarp::LogTrace("Router::PumpLL() end");
   }
 
   util::StatusObject
@@ -92,10 +105,94 @@ namespace llarp
           {"links", _linkManager.ExtractStatus()},
           {"outboundMessages", _outboundMessageHandler.ExtractStatus()}};
     }
-    else
-    {
+    return util::StatusObject{{"running", false}};
+  }
+
+  util::StatusObject
+  Router::ExtractSummaryStatus() const
+  {
+    if (!_running)
       return util::StatusObject{{"running", false}};
+
+    auto services = _hiddenServiceContext.ExtractStatus();
+    auto link_types = _linkManager.ExtractStatus();
+
+    uint64_t tx_rate = 0;
+    uint64_t rx_rate = 0;
+    uint64_t peers = 0;
+    for (const auto& links : link_types)
+    {
+      for (const auto& link : links)
+      {
+        if (link.empty())
+          continue;
+        for (const auto& peer : link["sessions"]["established"])
+        {
+          tx_rate += peer["tx"].get<uint64_t>();
+          rx_rate += peer["rx"].get<uint64_t>();
+          peers++;
+        }
+      }
     }
+
+    // Compute all stats on all path builders on the default endpoint
+    // Merge mnodeSessions, remoteSessions and default into a single array
+    std::vector<nlohmann::json> builders;
+    if(services.is_object())
+    {
+      const auto serviceDefault = services["default"];
+      builders.push_back(serviceDefault);
+
+      const auto mnodeSessions = serviceDefault["mnodeSessions"];
+      for(auto &session:mnodeSessions)
+      builders.push_back(session);
+
+      const auto remoteSessions = serviceDefault["remoteSessions"];
+      for(auto &session:remoteSessions)
+      builders.push_back(session);
+      
+    }
+
+    // Iterate over all items on this array to build the global pathStats
+    uint64_t activePaths = 0;
+    uint64_t success = 0;
+    uint64_t attempts = 0;
+    for (const auto& builder : builders)
+    {
+      if (builder.is_null())
+        continue;
+      const auto& paths = builder.at("paths");
+      if (paths.is_array())
+      {
+        for (const auto& [key, value] : paths.items())
+        {
+          if (value.is_object() && value.at("status").is_string() && value.at("status") == "established")
+            activePaths++;
+        }
+      }
+      const auto& buildStats = builder.at("buildStats");
+      if (buildStats.is_null())
+        continue;
+
+      success += buildStats.at("success").get<uint64_t>();
+      attempts += buildStats.at("attempts").get<uint64_t>();
+    }
+    double ratio = static_cast<double>(success) / (attempts + 1);
+
+    return util::StatusObject{
+        {"running", true},
+        {"version", llarp::VERSION_FULL},
+        {"uptime", to_json(Uptime())},
+        {"authCodes", services["default"]["authCodes"]},
+        {"exitMap", services["default"]["exitMap"]},
+        {"beldexAddress", services["default"]["identity"]},
+        {"numPathsBuilt", activePaths},
+        {"numPeersConnected", peers},
+        {"numRoutersKnown", _nodedb->NumLoaded()},
+        {"ratio", ratio},
+        {"txRate", tx_rate},
+        {"rxRate", rx_rate},
+    };
   }
 
   bool
@@ -174,16 +271,9 @@ namespace llarp
   }
 
   void
-  Router::PumpLL()
+  Router::TriggerPump()
   {
-    llarp::LogTrace("Router::PumpLL() start");
-    if (_stopping.load())
-      return;
-    paths.PumpDownstream();
-    paths.PumpUpstream();
-    _outboundMessageHandler.Tick();
-    _linkManager.PumpLinks();
-    llarp::LogTrace("Router::PumpLL() end");
+    m_Pump->Trigger();
   }
 
   bool
@@ -583,7 +673,7 @@ namespace llarp
       LogInfo("Loaded ", bootstrapRCList.size(), " bootstrap routers");
 
     // Init components after relevant config settings loaded
-    _outboundMessageHandler.Init(&_linkManager, &_rcLookupHandler, _loop);
+    _outboundMessageHandler.Init(this);
     _outboundSessionMaker.Init(
         this,
         &_linkManager,
@@ -632,13 +722,13 @@ namespace llarp
           util::memFn(&AbstractRouter::CheckRenegotiateValid, this),
           util::memFn(&Router::ConnectionTimedOut, this),
           util::memFn(&AbstractRouter::SessionClosed, this),
-          util::memFn(&AbstractRouter::PumpLL, this),
+          util::memFn(&AbstractRouter::TriggerPump, this),
           util::memFn(&AbstractRouter::QueueWork, this));
 
       const std::string& key = serverConfig.interface;
       int af = serverConfig.addressFamily;
       uint16_t port = serverConfig.port;
-      if (!server->Configure(loop(), key, af, port))
+      if (!server->Configure(this, key, af, port))
       {
         throw std::runtime_error(stringify("failed to bind inbound link on ", key, " port ", port));
       }
@@ -1170,8 +1260,6 @@ namespace llarp
 #ifdef _WIN32
     // windows uses proactor event loop so we need to constantly pump
     _loop->add_ticker([this] { PumpLL(); });
-#else
-    _loop->set_pump_function([this] { PumpLL(); });
 #endif
     _loop->call_every(ROUTER_TICK_INTERVAL, weak_from_this(), [this] { Tick(); });
     _running.store(true);
@@ -1204,7 +1292,7 @@ namespace llarp
             m_routerTesting.remove_node_from_failing(router);
             continue;
           }
-          LogDebug("Establishing session to ", router, " for SN testing");
+          LogDebug("Establishing session to ", router, " for MN testing");
           // try to make a session to this random router
           // this will do a dht lookup if needed
           _outboundSessionMaker.CreateSessionTo(
@@ -1216,7 +1304,7 @@ namespace llarp
                   // failed connection mark it as so
                   m_routerTesting.add_failing_node(router, previous_fails);
                   LogInfo(
-                      "FAILED SN connection test to ",
+                      "FAILED MN connection test to ",
                       router,
                       " (",
                       previous_fails + 1,
@@ -1229,7 +1317,7 @@ namespace llarp
                   if (previous_fails > 0)
                   {
                     LogInfo(
-                        "Successful SN connection test to ",
+                        "Successful MN connection test to ",
                         router,
                         " after ",
                         previous_fails,
@@ -1237,7 +1325,7 @@ namespace llarp
                   }
                   else
                   {
-                    LogDebug("Successful SN connection test to ", router);
+                    LogDebug("Successful MN connection test to ", router);
                   }
                 }
                 if (rpc)
@@ -1395,10 +1483,7 @@ namespace llarp
   void
   Router::QueueWork(std::function<void(void)> func)
   {
-    if (m_isMasterNode)
-      _loop->call_soon(std::move(func));
-    else
-      m_lmq->job(std::move(func));
+    m_lmq->job(std::move(func));
   }
 
   void
@@ -1438,7 +1523,7 @@ namespace llarp
         util::memFn(&AbstractRouter::CheckRenegotiateValid, this),
         util::memFn(&Router::ConnectionTimedOut, this),
         util::memFn(&AbstractRouter::SessionClosed, this),
-        util::memFn(&AbstractRouter::PumpLL, this),
+        util::memFn(&AbstractRouter::TriggerPump, this),
         util::memFn(&AbstractRouter::QueueWork, this));
 
     if (!link)
@@ -1446,7 +1531,7 @@ namespace llarp
 
     for (const auto af : {AF_INET, AF_INET6})
     {
-      if (not link->Configure(loop(), "*", af, m_OutboundPort))
+      if (not link->Configure(this, "*", af, m_OutboundPort))
         continue;
 
 #if defined(ANDROID)

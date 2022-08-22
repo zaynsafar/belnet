@@ -89,7 +89,7 @@ public class BelnetDaemon extends VpnService
       }
 
       // FIXME: make these configurable
-      String exitNode = "exit.beldex";
+      String exitNode = "exit.bdx";
       String upstreamDNS = "1.1.1.1";
       String ourRange = DetectFreeRange();
 

@@ -10,7 +10,6 @@ add_library(belnet-util
   util/logging/android_logger.cpp
   util/logging/buffer.cpp
   util/logging/file_logger.cpp
-  util/logging/json_logger.cpp
   util/logging/logger.cpp
   util/logging/logger_internal.cpp
   util/logging/loglevel.cpp
@@ -23,8 +22,9 @@ add_library(belnet-util
   util/str.cpp
   util/thread/queue_manager.cpp
   util/thread/threading.cpp
-  util/time.cpp
-)
+  util/time.cpp)
+
+
 add_dependencies(belnet-util genversion)
 
 target_include_directories(belnet-util PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR})
@@ -52,7 +52,6 @@ add_library(belnet-platform
   net/ip_range.cpp
   net/net.cpp
   net/net_int.cpp
-  net/route.cpp
   net/sock_addr.cpp
   vpn/packet_router.cpp
   vpn/platform.cpp
@@ -261,6 +260,10 @@ if(BUILD_LIBBELNET)
     install(TARGETS belnet-shared LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libbelnet)
   endif()
   add_log_tag(belnet-shared)
+endif()
+
+if(APPLE)
+  add_subdirectory(apple)
 endif()
 
 foreach(belnet_lib libbelnet belnet-platform belnet-util belnet-cryptography)

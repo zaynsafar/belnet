@@ -10,7 +10,7 @@ to configure belnet to be an exit add into `belnet.ini`:
     keyfile=/var/lib/belnet/exit.private
     reachable=1
     ifaddr=10.0.0.1/16
-    hops=1
+    hops=2
     paths=8
 
 

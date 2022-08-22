@@ -58,9 +58,9 @@ namespace llarp::dns
       return true;
 
     auto failFunc = [self = weak_from_this()](
-                        const SockAddr& from, const SockAddr& to, Message msg) {
+                        const SockAddr& to, const SockAddr& from, Message msg) {
       if (auto this_ptr = self.lock())
-        this_ptr->SendServerMessageBufferTo(from, to, msg.ToBuffer());
+        this_ptr->SendServerMessageBufferTo(to, from, msg.ToBuffer());
     };
 
     auto replyFunc = [self = weak_from_this()](auto&&... args) {
@@ -70,6 +70,7 @@ namespace llarp::dns
 
     m_UnboundResolver =
         std::make_shared<UnboundResolver>(m_Loop, std::move(replyFunc), std::move(failFunc));
+    m_Resolvers.clear();
     if (not m_UnboundResolver->Init())
     {
       llarp::LogError("Failed to initialize upstream DNS resolver.");
@@ -95,15 +96,22 @@ namespace llarp::dns
   }
 
   void
-  Proxy::SendServerMessageBufferTo(const SockAddr&, const SockAddr& to, llarp_buffer_t buf)
+  Proxy::SendServerMessageBufferTo(
+      const SockAddr& to, [[maybe_unused]] const SockAddr& from, llarp_buffer_t buf)
   {
     if (!m_Server->send(to, buf))
       llarp::LogError("dns reply failed");
   }
 
   bool
+  PacketHandler::IsUpstreamResolver(const SockAddr& to, [[maybe_unused]] const SockAddr& from) const
+  {
+    return m_Resolvers.count(to);
+  }
+
+  bool
   PacketHandler::ShouldHandlePacket(
-      const SockAddr& to, [[maybe_unused]] const SockAddr& from, llarp_buffer_t buf) const
+      const SockAddr& to, const SockAddr& from, llarp_buffer_t buf) const
   {
     MessageHeader hdr;
     if (not hdr.Decode(&buf))
@@ -119,12 +127,11 @@ namespace llarp::dns
 
     if (m_QueryHandler and m_QueryHandler->ShouldHookDNSMessage(msg))
       return true;
-
-    if (m_Resolvers.find(to) != m_Resolvers.end())
-    {
-      return false;
-    }
-    return true;
+    // If this request is going to an upstream resolver then we want to let it through (i.e. don't
+    // handle it), and so want to return false.  If we have something else then we want to
+    // intercept it to route it through our caching libunbound server (which then redirects the
+    // request to the belnet-configured upstream, if not cached).
+    return !IsUpstreamResolver(to, from);
   }
 
   void
@@ -148,7 +155,6 @@ namespace llarp::dns
     // TLS needs X509/ASN.1-DER and opting into the Root CA Cabal
     // thankfully mozilla added a backdoor that allows ISPs to turn it off
     // so we disable DoH for firefox using mozilla's ISP backdoor
-    // see: https://github.com/beldex-coin/beldex-network/issues/832
     for (const auto& q : msg.questions)
     {
       // is this firefox looking for their backdoor record?
@@ -157,7 +163,7 @@ namespace llarp::dns
         // yea it is, let's turn off DoH because god is dead.
         msg.AddNXReply();
         // press F to pay respects
-        SendServerMessageBufferTo(resolver, from, msg.ToBuffer());
+        SendServerMessageBufferTo(from, resolver, msg.ToBuffer());
         return;
       }
     }
@@ -165,7 +171,7 @@ namespace llarp::dns
     if (m_QueryHandler && m_QueryHandler->ShouldHookDNSMessage(msg))
     {
       auto reply = [self = shared_from_this(), to = from, resolver](dns::Message msg) {
-        self->SendServerMessageBufferTo(resolver, to, msg.ToBuffer());
+        self->SendServerMessageBufferTo(to, resolver, msg.ToBuffer());
       };
       if (!m_QueryHandler->HandleHookedDNSMessage(std::move(msg), reply))
       {
@@ -177,7 +183,7 @@ namespace llarp::dns
       // no upstream resolvers
       // let's serv fail it
       msg.AddServFail();
-      SendServerMessageBufferTo(resolver, from, msg.ToBuffer());
+      SendServerMessageBufferTo(from, resolver, msg.ToBuffer());
     }
     else
     {
