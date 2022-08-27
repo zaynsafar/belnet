@@ -35,13 +35,6 @@
          "name": "build"
       }
    ],
-   "trigger": {
-      "branch": {
-         "exclude": [
-            "debian/*",
-            "ubuntu/*"
-         ]
-      }
-   },
+   
    "type": "docker"
 }
