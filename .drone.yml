@@ -1,6 +1,4 @@
-{
-   "kind": "pipeline",
-   "name": "Windows (amd64)",
+ame": "Windows (amd64)",
    "platform": {
       "arch": "amd64"
    },
@@ -19,7 +17,7 @@
             "echo \"man-db man-db/auto-update boolean false\" | debconf-set-selections",
             "apt-get -o=Dpkg::Use-Pty=0 -q update",
             "apt-get -o=Dpkg::Use-Pty=0 -q install -y eatmydata",
-            "eatmydata apt-get -o=Dpkg::Use-Pty=0 -q install -y build-essential cmake git pkg-config ccache g++-mingw-w64-x86-64-posix apt-utils libsystemd-dev nsis zip automake libtool",
+            "eatmydata apt-get -o=Dpkg::Use-Pty=0 -q install -y build-essential cmake git pkg-config ccache g++-mingw-w64-x86-64-posix nsis zip automake libtool",
             "update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix",
             "update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix",
             "VERBOSE=1 JOBS=6 ./contrib/windows.sh",
@@ -35,5 +33,13 @@
          "name": "build"
       }
    ],
-      "type": "docker"
+   "trigger": {
+      "branch": {
+         "exclude": [
+            "debian/*",
+            "ubuntu/*"
+         ]
+      }
+   },
+   "type": "docker"
 }
