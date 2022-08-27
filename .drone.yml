@@ -1,0 +1,52 @@
+{
+   "kind": "pipeline",
+   "name": "Ubuntu bionic (amd64)",
+   "platform": {
+      "arch": "amd64"
+   },
+   "steps": [
+      {
+         "commands": [
+            "git fetch --tags",
+            "git submodule update --init --recursive --depth=1"
+         ],
+         "image": "drone/git",
+         "name": "submodules"
+      },
+      {
+         "commands": [
+            "echo \"Building on ${DRONE_STAGE_MACHINE}\"",
+            "echo \"man-db man-db/auto-update boolean false\" | debconf-set-selections",
+            "apt-get -o=Dpkg::Use-Pty=0 -q update",
+            "apt-get -o=Dpkg::Use-Pty=0 -q install -y eatmydata",
+            "eatmydata apt-get -o=Dpkg::Use-Pty=0 -q install -y lsb-release",
+            "cp contrib/deb.beldex.io.gpg /etc/apt/trusted.gpg.d",
+            "echo deb http://deb.beldex.io $$(lsb_release -sc) main >/etc/apt/sources.list.d/beldex.io.list",
+            "eatmydata apt-get -o=Dpkg::Use-Pty=0 -q update",
+            "eatmydata apt-get -o=Dpkg::Use-Pty=0 -q dist-upgrade -y",
+            "eatmydata apt-get -o=Dpkg::Use-Pty=0 -q install -y gdb cmake git pkg-config ccache g++-8 libsodium-dev libsystemd-dev python3-dev libuv1-dev libunbound-dev nettle-dev libssl-dev libevent-dev libsqlite3-dev libcurl4-openssl-dev make",
+            "mkdir build",
+            "cd build",
+            "cmake .. -DWITH_SETCAP=OFF -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DCMAKE_BUILD_TYPE=Release -DWARNINGS_AS_ERRORS=ON -DWITH_LTO=OFF -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8",
+            "VERBOSE=1 make -j6",
+            "../contrib/ci/drone-gdb.sh ./test/testAll --use-colour yes"
+         ],
+         "environment": {
+            "SSH_KEY": {
+               "from_secret": "SSH_KEY"
+            }
+         },
+         "image": "ubuntu:bionic",
+         "name": "build"
+      }
+   ],
+   "trigger": {
+      "branch": {
+         "exclude": [
+            "debian/*",
+            "ubuntu/*"
+         ]
+      }
+   },
+   "type": "docker"
+}
