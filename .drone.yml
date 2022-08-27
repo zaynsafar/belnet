@@ -31,7 +31,7 @@
             },
             "WINDOWS_BUILD_NAME": "64bit"
          },
-         "image": "debian:sid",
+         "image": "debian-win32-cross",
          "name": "build"
       }
    ],
