@@ -31,7 +31,7 @@
             },
             "WINDOWS_BUILD_NAME": "64bit"
          },
-         "image": "ubuntu:focal",
+         "image": "debian:sid",
          "name": "build"
       }
    ],
