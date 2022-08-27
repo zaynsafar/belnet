@@ -1,4 +1,6 @@
-ame": "Windows (amd64)",
+{
+   "kind": "pipeline",
+   "name": "Windows (amd64)",
    "platform": {
       "arch": "amd64"
    },
