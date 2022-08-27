@@ -19,7 +19,7 @@
             "echo \"man-db man-db/auto-update boolean false\" | debconf-set-selections",
             "apt-get -o=Dpkg::Use-Pty=0 -q update",
             "apt-get -o=Dpkg::Use-Pty=0 -q install -y eatmydata",
-            "eatmydata apt-get -o=Dpkg::Use-Pty=0 -q install -y build-essential cmake git pkg-config ccache g++-mingw-w64-x86-64-posix nsis zip automake libtool",
+            "eatmydata apt-get -o=Dpkg::Use-Pty=0 -q install -y build-essential cmake git pkg-config ccache g++-mingw-w64-x86-64-posix apt-utils nsis zip automake libtool",
             "update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix",
             "update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix",
             "VERBOSE=1 JOBS=6 ./contrib/windows.sh",
@@ -36,48 +36,4 @@
       }
    ],
       "type": "docker"
-}
----
-{
-   "kind": "pipeline",
-   "name": "Static (bionic amd64)",
-   "platform": {
-      "arch": "amd64"
-   },
-   "steps": [
-      {
-         "commands": [
-            "git fetch --tags",
-            "git submodule update --init --recursive --depth=1"
-         ],
-         "image": "drone/git",
-         "name": "submodules"
-      },
-      {
-         "commands": [
-            "echo \"Building on ${DRONE_STAGE_MACHINE}\"",
-            "echo \"man-db man-db/auto-update boolean false\" | debconf-set-selections",
-            "apt-get -o=Dpkg::Use-Pty=0 -q update",
-            "apt-get -o=Dpkg::Use-Pty=0 -q install -y eatmydata",
-            "eatmydata apt-get -o=Dpkg::Use-Pty=0 -q dist-upgrade -y",
-            "eatmydata apt-get -o=Dpkg::Use-Pty=0 -q install -y gdb cmake git pkg-config ccache g++-8 python3-dev automake libtool",
-            "mkdir build",
-            "cd build",
-            "cmake .. -DWITH_SETCAP=OFF -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DCMAKE_BUILD_TYPE=Release -DWARNINGS_AS_ERRORS=ON -DWITH_LTO=ON -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -DCMAKE_CXX_FLAGS=\"-march=x86-64 -mtune=haswell\" -DCMAKE_C_FLAGS=\"-march=x86-64 -mtune=haswell\" -DNATIVE_BUILD=OFF -DWITH_SYSTEMD=OFF",
-            "VERBOSE=1 make -j6",
-            "../contrib/ci/drone-gdb.sh ./test/testAll --use-colour yes",
-            "../contrib/ci/drone-check-static-libs.sh",
-            "../contrib/ci/drone-static-upload.sh"
-         ],
-         "environment": {
-            "SSH_KEY": {
-               "from_secret": "SSH_KEY"
-            }
-         },
-         "image": "ubuntu:bionic",
-         "name": "build"
-      }
-   ],
-  
-   "type": "docker"
 }
