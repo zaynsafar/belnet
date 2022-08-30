@@ -51,7 +51,7 @@ else
     tar cJvf "$archive" "$base"
 fi
 
-upload_to="beldex.rocks/${DRONE_REPO// /_}/${DRONE_BRANCH// /_}"
+upload_to="build.beldex.io/${DRONE_REPO// /_}/${DRONE_BRANCH// /_}"
 
 # sftp doesn't have any equivalent to mkdir -p, so we have to split the above up into a chain of
 # -mkdir a/, -mkdir a/b/, -mkdir a/b/c/, ... commands.  The leading `-` allows the command to fail
@@ -65,7 +65,7 @@ for p in "${upload_dirs[@]}"; do
 -mkdir $dir_tmp"
 done
 
-sftp -i ssh_key -b - -o StrictHostKeyChecking=off drone@beldex.rocks <<SFTP
+sftp -i ssh_key -b - -o StrictHostKeyChecking=off ubuntu@build.beldex.io <<SFTP
 $mkdirs
 put $archive $upload_to
 SFTP
