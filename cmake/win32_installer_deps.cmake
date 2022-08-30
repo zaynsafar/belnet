@@ -20,7 +20,7 @@ file(DOWNLOAD
 execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_BINARY_DIR}/belnet-gui.zip
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
-install(DIRECTORY ${CMAKE_BINARY_DIR}/gui DESTINATION share COMPONENT gui)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/belnet-windows/gui DESTINATION share COMPONENT gui)
 install(PROGRAMS ${TUNTAP_EXE} DESTINATION bin COMPONENT tuntap)
 install(FILES ${BOOTSTRAP_FILE} DESTINATION share COMPONENT belnet RENAME bootstrap.signed)
 
