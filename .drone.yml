@@ -4,8 +4,7 @@
    "platform": {
       "arch": "amd64"
    },
-
-   "steps": [
+"steps": [
       {
          "commands": [
             "git fetch --tags",
