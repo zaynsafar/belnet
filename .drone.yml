@@ -4,7 +4,6 @@
    "platform": {
       "arch": "amd64"
    },
-
 "steps": [
       {
          "commands": [
