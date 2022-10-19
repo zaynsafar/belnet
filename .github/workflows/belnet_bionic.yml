@@ -26,5 +26,5 @@ jobs:
          cd build
          cmake .. -DWITH_SETCAP=OFF -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DCMAKE_BUILD_TYPE=Release -DWARNINGS_AS_ERRORS=ON -DWITH_LTO=ON -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -DCMAKE_CXX_FLAGS=\"-march=x86-64\" -DCMAKE_C_FLAGS=\"-march=x86-64\" -DNATIVE_BUILD=OFF -DWITH_SYSTEMD=OFF
          VERBOSE=1 make -j6
-         ../drone-check-static-libs.sh
-         ../drone-static-upload.sh
+         ../check-static-libs.sh
+         ../static-upload.sh
