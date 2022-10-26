@@ -30,18 +30,6 @@ jobs:
       run: |
         set -o errexit
 
-        if [ -z "$SSHKEY" ]; then
-        echo -e "\n\n\n\e[31;1mUnable to upload artifact: SSHKEY not set\e[0m"
-        # Just warn but don't fail, so that this doesn't trigger a build failure for untrusted builds
-        exit 0
-        fi
-
-        echo "$SSHKEY" >sshkey
-
-        set -o xtrace  # Don't start tracing until *after* we write the ssh key
-
-        chmod 600 sshkey
-
         os="${UPLOAD_OS:-$DRONE_STAGE_OS-$DRONE_STAGE_ARCH}"
         if [ -n "$WINDOWS_BUILD_NAME" ]; then
         os="windows-$WINDOWS_BUILD_NAME"
