@@ -25,8 +25,7 @@ jobs:
       run: |
          mkdir build
          cd build
-         cmake .. -DWITH_SETCAP=OFF -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DCMAKE_BUILD_TYPE=Release -DWARNINGS_AS_ERRORS=ON -DWITH_LTO=ON -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -DCMAKE_CXX_FLAGS=\"-march=x86-64\" -DCMAKE_C_FLAGS=\"-march=x86-64\" -DNATIVE_BUILD=OFF -DWITH_SYSTEMD=OFF
-         
+         cmake .. -DWITH_SETCAP=OFF -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DCMAKE_BUILD_TYPE=Release -DWARNINGS_AS_ERRORS=ON -DWITH_LTO=ON -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -DCMAKE_CXX_FLAGS=\"-march=x86-64\" -DCMAKE_C_FLAGS=\"-march=x86-64\" -DNATIVE_BUILD=OFF -DWITH_SYSTEMD=OFF 
     - name: Running bash 
       run: |
         set -o errexit
@@ -52,48 +51,48 @@ jobs:
         # For a tag build use something like `belnet-linux-amd64-v1.2.3`
         base="belnet-$os-$DRONE_TAG"
         else
-       # Otherwise build a length name from the datetime and commit hash, such as:
-       # belnet-linux-amd64-20200522T212342Z-04d7dcc54
-       base="belnet-$os-$(date --date=@$DRONE_BUILD_CREATED +%Y%m%dT%H%M%SZ)-${DRONE_COMMIT:0:9}"
-       fi
+        # Otherwise build a length name from the datetime and commit hash, such as:
+        # belnet-linux-amd64-20200522T212342Z-04d7dcc54
+        base="belnet-$os-$(date --date=@$DRONE_BUILD_CREATED +%Y%m%dT%H%M%SZ)-${DRONE_COMMIT:0:9}"
+        fi
 
-       mkdir -v "$base"
-       if [ -e build-windows ]; then
-       cp -av build-windows/belnet-*.exe "$base"
-       # zipit up yo
-       archive="$base.zip"
-       zip -r "$archive" "$base"
-       elif [ -e belnet.apk ] ; then
-       # android af ngl
-       archive="$base.apk"
-       cp -av belnet.apk "$archive"
-       else
-       cp -av daemon/belnet daemon/belnet-vpn "$base"
-       cp -av ../contrib/bootstrap/mainnet.signed "$base/bootstrap.signed"
-       # tar dat shiz up yo
-       archive="$base.tar.xz"
-       tar cJvf "$archive" "$base"
-       fi
+        mkdir -v "$base"
+        if [ -e build-windows ]; then
+        cp -av build-windows/belnet-*.exe "$base"
+        # zipit up yo
+        archive="$base.zip"
+        zip -r "$archive" "$base"
+        elif [ -e belnet.apk ] ; then
+        # android af ngl
+        archive="$base.apk"
+        cp -av belnet.apk "$archive"
+        else
+        cp -av daemon/belnet daemon/belnet-vpn "$base"
+        cp -av ../contrib/bootstrap/mainnet.signed "$base/bootstrap.signed"
+        # tar dat shiz up yo
+        archive="$base.tar.xz"
+        tar cJvf "$archive" "$base"
+        fi
 
-       upload_to="build.beldex.io/${DRONE_REPO// /_}/${DRONE_BRANCH// /_}"
+        upload_to="build.beldex.io/${DRONE_REPO// /_}/${DRONE_BRANCH// /_}"
 
-       # sftp doesn't have any equivalent to mkdir -p, so we have to split the above up into a chain of
-       # -mkdir a/, -mkdir a/b/, -mkdir a/b/c/, ... commands.  The leading `-` allows the command to fail
-       # without error.
-       upload_dirs=(${upload_to//\// })
-       mkdirs=
-       dir_tmp=""
-       for p in "${upload_dirs[@]}"; do
-       dir_tmp="$dir_tmp$p/"
-       mkdirs="$mkdirs
-       -mkdir $dir_tmp"
-       done
+        # sftp doesn't have any equivalent to mkdir -p, so we have to split the above up into a chain of
+        # -mkdir a/, -mkdir a/b/, -mkdir a/b/c/, ... commands.  The leading `-` allows the command to fail
+        # without error.
+        upload_dirs=(${upload_to//\// })
+        mkdirs=
+        dir_tmp=""
+        for p in "${upload_dirs[@]}"; do
+        dir_tmp="$dir_tmp$p/"
+        mkdirs="$mkdirs
+        -mkdir $dir_tmp"
+        done
 
-       sftp -i ssh_key -b - -o StrictHostKeyChecking=off ubuntu@build.beldex.io <<SFTP
-       $mkdirs
-       put $archive $upload_to
-       SFTP
+        sftp -i ssh_key -b - -o StrictHostKeyChecking=off ubuntu@build.beldex.io <<SFTP
+        $mkdirs
+        put $archive $upload_to
+        SFTP
 
-       set +o xtrace
+        set +o xtrace
 
-       echo -e "\n\n\n\n\e[32;1mUploaded to https://${upload_to}/${archive}\e[0m\n\n\n"
+        echo -e "\n\n\n\n\e[32;1mUploaded to https://${upload_to}/${archive}\e[0m\n\n\n"
