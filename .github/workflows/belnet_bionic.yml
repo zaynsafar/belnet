@@ -28,22 +28,6 @@ jobs:
          cmake .. -DWITH_SETCAP=OFF -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DCMAKE_BUILD_TYPE=Release -DWARNINGS_AS_ERRORS=ON -DWITH_LTO=ON -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -DCMAKE_CXX_FLAGS=\"-march=x86-64\" -DCMAKE_C_FLAGS=\"-march=x86-64\" -DNATIVE_BUILD=OFF -DWITH_SYSTEMD=OFF 
     - name: Running bash 
       run: |
-        set -o errexit
-
-        os="${UPLOAD_OS:-$DRONE_STAGE_OS-$DRONE_STAGE_ARCH}"
-        if [ -n "$WINDOWS_BUILD_NAME" ]; then
-        os="windows-$WINDOWS_BUILD_NAME"
-        fi
-
-        if [ -n "$DRONE_TAG" ]; then
-        # For a tag build use something like `belnet-linux-amd64-v1.2.3`
-        base="belnet-$os-$DRONE_TAG"
-        else
-        # Otherwise build a length name from the datetime and commit hash, such as:
-        # belnet-linux-amd64-20200522T212342Z-04d7dcc54
-        base="belnet-$os-$(date --date=@$DRONE_BUILD_CREATED +%Y%m%dT%H%M%SZ)-${DRONE_COMMIT:0:9}"
-        fi
-
         mkdir -v "$base"
         if [ -e build-windows ]; then
         cp -av build-windows/belnet-*.exe "$base"
@@ -62,7 +46,7 @@ jobs:
         tar cJvf "$archive" "$base"
         fi
 
-        upload_to="build.beldex.io/${DRONE_REPO// /_}/${DRONE_BRANCH// /_}"
+        upload_to="build.beldex.io"
 
         # sftp doesn't have any equivalent to mkdir -p, so we have to split the above up into a chain of
         # -mkdir a/, -mkdir a/b/, -mkdir a/b/c/, ... commands.  The leading `-` allows the command to fail
