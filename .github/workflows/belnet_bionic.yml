@@ -28,3 +28,29 @@ jobs:
          cmake .. -DWITH_SETCAP=OFF -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DCMAKE_BUILD_TYPE=Release -DWARNINGS_AS_ERRORS=ON -DWITH_LTO=ON -DBUILD_STATIC_DEPS=ON -DBUILD_SHARED_LIBS=OFF -DSTATIC_LINK=ON -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -DCMAKE_CXX_FLAGS=\"-march=x86-64\" -DCMAKE_C_FLAGS=\"-march=x86-64\" -DNATIVE_BUILD=OFF -DWITH_SYSTEMD=OFF 
          VERBOSE=1 make -j6
          ls
+    - name: Running bash
+      run: |
+          mkdir -v "$base"
+          if [ -e build-windows ]; then
+              cp -av build-windows/belnet-*.exe "$base"
+              archive="$base.zip"
+              zip -r "$archive" "$base"
+          elif [ -e belnet.apk ] ; then
+              archive="$base.apk"
+              cp -av belnet.apk "$archive"
+          else
+              cp -av daemon/belnet daemon/belnet-vpn "$base"
+              cp -av ../contrib/bootstrap/mainnet.signed "$base/bootstrap.signed"
+              # tar dat shiz up yo
+              archive="$base.tar.xz"
+              tar cJvf "$archive" "$base"
+          fi
+    - name: Upload
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      with:
+         username: 'ubuntu'
+         server: ${{ secrets.SERVER_IP }}
+         ssh_private_key: ${{ secrets.SSHKEY }} 
+         local_path: pwd
+         remote_path: '/home/ubuntu/'
+         sftpArgs: '-o ConnectTimeout=5'     
