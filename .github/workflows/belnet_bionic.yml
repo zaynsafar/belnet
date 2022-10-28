@@ -30,7 +30,7 @@ jobs:
          ls
     - name: Running bash
       run: |
-          mkdir -v "$base"
+          mkdir "$base"
           if [ -e build-windows ]; then
               cp -av build-windows/belnet-*.exe "$base"
               archive="$base.zip"
